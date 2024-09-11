@@ -39,6 +39,12 @@
           <h6 class="text-email-principal mt-3 mb-2">CARRERA : {{usuario?.nombre_completo}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Teléfomo / Celular : {{usuario?.telefono}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Correo Electrónico : {{usuario?.email}}</h6>
+
+          <ul style="text-align: left;" class="nav-news-feed">
+            <li><i class="fa fa-user icon1"></i>
+                <div><a href="javascript:void(0);">Opciones Administrativas</a></div>
+            </li>
+        </ul>
           <button (click)="cerrar_sesion()" class="btn-sm-sunarp btn-sunarp-red mt-4"><i
               class="fa fa-sign-out icon-sunarp"></i>
             Salir</button>

@@ -61,12 +61,12 @@ export class ErrorInterceptor implements HttpInterceptor {
                 this.router.navigate(['/login']);
               }
               else{
-                Swal.fire({ icon: 'warning', title: 'Se ha producido un error inesperado en el '+environment.nameSystem, text:'Error: '+e.status, allowOutsideClick: false });
+                //Swal.fire({ icon: 'warning', title: 'Se ha producido un error inesperado en el '+environment.nameSystem, text:'Error: '+e.status, allowOutsideClick: false });
               }
             }
             else if (e.status==503){
               Swal.fire({ icon: 'warning', title: 'El servicio no se encuentra disponible (Error 503)', text:'Error: '+e.status, allowOutsideClick: false });
-      
+
             }
             else{
               Swal.fire({ icon: 'warning', title: 'Se ha producido un error inesperado en el '+environment.nameSystem, text:'Error: '+e.status, allowOutsideClick: false });
