@@ -19,9 +19,8 @@
         </g>
       </svg>
       <img class="title-navbar-img" src="assets/img/sistema/logo-sunarp-white.png">
-      <span class="title-navbar-sistema">EPICS<span
-          class="text-sunarp-red">BOT</span></span>
-      </div>
+      <span class="title-navbar-sistema">EPICS<span class="text-sunarp-red">BOT</span></span>
+    </div>
   </nav>
   <aside [ngClass]="{ 'lg-resize': isMenuOculto, '':  !isMenuOculto}" id="leftsidebar" class="sidebar">
     <div class="container-sidebar-op">
@@ -34,17 +33,21 @@
             <img *ngSwitchDefault src="assets/img/sistema/hombre.jpg" class="img-radius" alt="sunarp">
           </div>
           <div class="mt-2">
-            <h5 class="text-white mt-2 h5-sunarp">CÓDIGO  : {{usuario?.codigo_alumno}}</h5>
+            <h5 class="text-white mt-2 h5-sunarp">CÓDIGO : {{usuario?.codigo_alumno}}</h5>
           </div>
           <h6 class="text-email-principal mt-3 mb-2">CARRERA : {{usuario?.nombre_completo}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Teléfomo / Celular : {{usuario?.telefono}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Correo Electrónico : {{usuario?.email}}</h6>
 
           <ul style="text-align: left;" class="nav-news-feed">
-            <li><i class="fa fa-user icon1"></i>
-                <div><a href="javascript:void(0);">Opciones Administrativas</a></div>
+            <li (click)="verChatBot()"><i class="far fa-comment-dots icon1"></i>
+              <div><a href="javascript:void(0);">Chatbot</a></div>
             </li>
-        </ul>
+            <li (click)="verFuncionesAdministrativas()"><i class="fa fa-user icon4"></i>
+              <div><a href="javascript:void(0);">Opciones Administrativas</a>
+              </div>
+            </li>
+          </ul>
           <button (click)="cerrar_sesion()" class="btn-sm-sunarp btn-sunarp-red mt-4"><i
               class="fa fa-sign-out icon-sunarp"></i>
             Salir</button>
@@ -61,7 +64,8 @@
       <div class="alert-custom-sunarp alert-sunarp-green mt-2 mb-4 alert-custom-no-shadow">
         <header></header><i></i>
         <h2>
-          <span>{{usuario?.sexo=='M'?'BIENVENIDO ':usuario?.sexo=='F'?'BIENVENIDA ':'BIENVENIDO'}}</span>{{usuario?.nombre_completo}}
+          <span>{{usuario?.sexo=='M'?'BIENVENIDO ':usuario?.sexo=='F'?'BIENVENIDA
+            ':'BIENVENIDO'}}</span>{{usuario?.nombre_completo}}
 
         </h2>
       </div>
@@ -69,4 +73,3 @@
     </div>
   </section>
 </div>
-

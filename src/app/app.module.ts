@@ -14,7 +14,7 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
   declarations: [
     AppComponent,
     PrivateLayoutComponent,
-    PublicLayoutComponent  ],
+    PublicLayoutComponent ],
   imports: [
     BrowserModule,
     AppRoutingModule,

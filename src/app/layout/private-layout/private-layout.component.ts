@@ -67,11 +67,18 @@ export class PrivateLayoutComponent {
   }
 
   cerrar_sesion() {
- 
+
     this.modalService.dismissAll();
     this.spinner.hide();
     this._authService.logout();
     this.router.navigate(["/login"]);
+  }
+
+  verChatBot(){
+    this.router.navigate(["/usuario/chatbot"]);
+  }
+  verFuncionesAdministrativas(){
+    this.router.navigate(["/usuario/admin/funciones"]);
   }
 
 }

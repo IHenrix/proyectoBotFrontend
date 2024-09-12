@@ -1,0 +1,15 @@
+<nav ngbNav #nav="ngbNav" class="nav-tabs responsive-tabs" [destroyOnHide]="false">
+  <ng-container ngbNavItem>
+    <a class="sub-menu-item" ngbNavLink>Crear Usuario</a>
+    <ng-template ngbNavContent>
+      <app-creacion-usuario></app-creacion-usuario>
+    </ng-template>
+  </ng-container>
+  <ng-container ngbNavItem>
+    <a class="sub-menu-item" ngbNavLink>Crear Guías</a>
+    <ng-template ngbNavContent>
+
+    </ng-template>
+  </ng-container>
+</nav>
+<div [ngbNavOutlet]="nav" class="mt-3"></div>

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ChatbotComponent } from './chatbot/chatbot.component';
+import { FuncionesAdministrativasComponent } from './admin/funciones-administrativas/funciones-administrativas.component';
 
 const routes: Routes = [
   {
@@ -8,7 +9,8 @@ const routes: Routes = [
     redirectTo: '/usuario/chatbot',
     pathMatch: 'full',
   },
-  { path: 'chatbot', component: ChatbotComponent}
+  { path: 'chatbot', component: ChatbotComponent},
+  { path: 'admin/funciones', component: FuncionesAdministrativasComponent}
 ];
 
 

@@ -4,10 +4,13 @@ import { UsuarioRoutingModule } from './usuario-routing.module';
 import { UsuarioComponent } from './usuario.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { FuncionesAdministrativasComponent } from './admin/funciones-administrativas/funciones-administrativas.component';
+import { CreacionUsuarioComponent } from './admin/funciones-administrativas/creacion-usuario/creacion-usuario.component';
+import { CreacionGuiaComponent } from './admin/funciones-administrativas/creacion-guia/creacion-guia.component';
 
 
 @NgModule({
-  declarations: [UsuarioComponent, ChatbotComponent
+  declarations: [UsuarioComponent, ChatbotComponent, FuncionesAdministrativasComponent, CreacionUsuarioComponent, CreacionGuiaComponent
   ],
   imports: [
     CommonModule,
