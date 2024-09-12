@@ -4,8 +4,9 @@ export class Usuario {
   paterno: string;
   materno: string;
   sexo: string;
-  codigo_alumno: string;
+  codigo: string;
   carrera: string;
   email: string;
   telefono: string;
+  roles=[];
 };

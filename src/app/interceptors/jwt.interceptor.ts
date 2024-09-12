@@ -12,13 +12,25 @@ export class JwtInterceptor implements HttpInterceptor {
     let token = this._authService.token();
     let id = environment.apiConnectId;
     if(!request.url.includes('oauth/token') && token && !request.url.includes('api.ipify.org')) {
-      request = request.clone({
-        setHeaders: {
-          "Authorization": "Bearer " + token,
-          "Content-Type":"application/json; charset=utf-8"
-         // "X-IBM-Client-Id": id
-        }
-      });
+
+      if(request.url.includes('crearArchivo') || request.url.includes('editarArchivo') ){
+        request = request.clone({
+          setHeaders: {
+            "Authorization": "Bearer " + token,
+          }
+        });
+      }
+      else{
+        request = request.clone({
+          setHeaders: {
+            "Authorization": "Bearer " + token,
+            "Content-Type":"application/json; charset=utf-8"
+           // "X-IBM-Client-Id": id
+          }
+        });
+      }
+
+
     } else if (!request.url.includes('api.ipify.org')){
       request = request.clone({
         setHeaders: {

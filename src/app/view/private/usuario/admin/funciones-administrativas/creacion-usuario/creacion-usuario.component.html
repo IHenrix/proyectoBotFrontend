@@ -1,11 +1,37 @@
-
-
-<button type="button" class="btn-sunarp-yellow btn-reload-tabla"><i
-  class="fa fa-user icon-sunarp"></i>Crear Usuario</button>
+<div class="row mb-4">
+  <div class="col-md-12 col-lg-12">
+    <form [formGroup]="formBusqueda" (ngSubmit)="buscar()">
+      <div class="row">
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Nombres</label>
+          <input formControlName="nombre" class="form-control-sunarp" type="text">
+        </div>
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Paterno</label>
+          <input formControlName="apellidoPaterno" class="form-control-sunarp" type="text">
+        </div>
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Materno</label>
+          <input formControlName="apellidoMaterno" class="form-control-sunarp" type="text">
+        </div>
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Usuario</label>
+          <input formControlName="usuario" class="form-control-sunarp" type="text">
+        </div>
+      </div>
+      <div class="w-100 text-center mt-4">
+        <button style="margin-right: 20px;" type="submit" class="btn-sunarp-green btn-reload-tabla"><i
+            class="fa fa-search icon-sunarp"></i>Buscar</button>
+        <button (click)="limpiar()" type="button" class="btn-sunarp-yellow mr-2"><i
+            class="fa fa-refresh icon-sunarp"></i>Limpiar</button>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="mt-2">
   <div class="table-responsive">
-    <table datatable
-      class="table thead-sunarp" datatable [dtOptions]="datatable_usuario" [dtTrigger]="datatable_dtTrigger_usuario">
+    <table datatable class="table thead-sunarp" datatable [dtOptions]="datatable_usuario"
+      [dtTrigger]="datatable_dtTrigger_usuario">
       <thead>
         <tr>
           <th style="width: 30px" class="text-center">N°</th>

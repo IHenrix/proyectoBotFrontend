@@ -61,10 +61,11 @@ export class AuthService {
     this._usuario.paterno = payload.apellido_paterno;
     this._usuario.materno = payload.apellido_materno;
     this._usuario.sexo = payload.sexo;
-    this._usuario.codigo_alumno = payload.codigo_alumno;
+    this._usuario.codigo = payload.codigo;
     this._usuario.carrera = payload.carrera;
     this._usuario.email = payload.email;
     this._usuario.telefono = payload.telefono;
+    this._usuario.roles = payload.authorities;
     localStorage.setItem("us_Bot", JSON.stringify(this._usuario));
   }
 
@@ -91,5 +92,28 @@ export class AuthService {
     }
     return false;
   }
+
+  obtenerRol(): string {
+    if (this._usuario && Array.isArray(this._usuario.roles) && this._usuario.roles.length > 0) {
+      return this._usuario.roles[0]; 
+    }
+    return 'No hay roles disponibles';
+  }
+  convertirRol(rol: string): string {
+    switch (rol) {
+      case 'ROLE_USER':
+        return 'ALUMNO';
+      case 'ROLE_DOCENTE':
+        return 'DOCENTE';
+      case 'ROLE_ADMIN':
+        return 'ADMINISTRADOR';
+      default:
+        return '-';
+    }
+  }
+  mostrarRolActual():string{
+    return this.convertirRol(this.obtenerRol());
+  }
+
 
 }

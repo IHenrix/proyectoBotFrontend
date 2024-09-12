@@ -148,6 +148,23 @@ button {
 .typing-indicator span:nth-child(3) {
   animation-delay: 0.4s;
 }
+.option-btn {
+  display: block;
+  width: 100%;
+  background-color: #EB3219;
+  color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+}
+
+.option-btn:hover {
+  background-color: #c12b1a;
+}
 
 @keyframes bounce {
   0%, 100% {

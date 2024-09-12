@@ -26,14 +26,14 @@
     <div class="container-sidebar-op">
       <div class="card user-card">
         <div class="card-block">
-          <h5 class="mt-3 text-sunarp-white">ALUMNO</h5>
+          <h5 class="mt-3 text-sunarp-white">{{_authService.mostrarRolActual()}}</h5>
           <div class="user-image" [ngSwitch]="usuario?.sexo">
             <img *ngSwitchCase="'M'" src="assets/img/sistema/hombre.jpg" class="img-radius" alt="sunarp">
             <img *ngSwitchCase="'F'" src="assets/img/sistema/mujer.jpg" class="img-radius" alt="sunarp">
             <img *ngSwitchDefault src="assets/img/sistema/hombre.jpg" class="img-radius" alt="sunarp">
           </div>
           <div class="mt-2">
-            <h5 class="text-white mt-2 h5-sunarp">CÓDIGO : {{usuario?.codigo_alumno}}</h5>
+            <h5 class="text-white mt-2 h5-sunarp">CÓDIGO : {{usuario?.codigo}}</h5>
           </div>
           <h6 class="text-email-principal mt-3 mb-2">CARRERA : {{usuario?.nombre_completo}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Teléfomo / Celular : {{usuario?.telefono}}</h6>
@@ -43,7 +43,7 @@
             <li (click)="verChatBot()"><i class="far fa-comment-dots icon1"></i>
               <div><a href="javascript:void(0);">Chatbot</a></div>
             </li>
-            <li (click)="verFuncionesAdministrativas()"><i class="fa fa-user icon4"></i>
+            <li (click)="verFuncionesAdministrativas()" *ngIf="verPermisos()=='ROLE_DOCENTE' || verPermisos()=='ROLE_ADMIN'" ><i class="fa fa-user icon4"></i>
               <div><a href="javascript:void(0);">Opciones Administrativas</a>
               </div>
             </li>

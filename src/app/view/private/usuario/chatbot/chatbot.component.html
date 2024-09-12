@@ -1,5 +1,13 @@
 <div class="chat-container">
   <div class="messages-container" #messagesContainer>
+    <div class="bot-message">
+      <p>¡Hola! Soy EPICSBot, tu asistente virtual académico. Recuerda que solo puedo responder preguntas relacionadas con tus estudios. No puedo resolver tareas ni ayudarte en evaluaciones. ¿En qué te puedo ayudar hoy? Elige una opción:</p>
+      <button class="option-btn" (click)="seleccionarOpcion('Retroalimentación de Documentos')">Retroalimentación de Documentos</button>
+      <button class="option-btn" (click)="seleccionarOpcion('Consulta sobre mi Proyecto')">Consulta sobre mi Proyecto</button>
+      <button class="option-btn" (click)="seleccionarOpcion('Guías Académicas')">Guías Académicas</button>
+      <button class="option-btn" (click)="seleccionarOpcion('Revisión de Citaciones')">Revisión de Citaciones</button>
+      <button class="option-btn" (click)="seleccionarOpcion('Consulta de Recursos Bibliográficos')">Consulta de Recursos Bibliográficos</button>
+    </div>
     <div *ngFor="let message of messages" class="message">
       <div [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
         {{ message.text }}

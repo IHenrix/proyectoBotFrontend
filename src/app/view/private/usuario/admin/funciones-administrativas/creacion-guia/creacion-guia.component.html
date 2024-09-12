@@ -1,1 +1,76 @@
-<p>creacion-guia works!</p>
+<div class="row mb-4">
+  <div class="col-md-12 col-lg-12">
+    <div class="w-100 mt-4">
+      <button (click)="buscar()" style="margin-right: 20px;" type="button" class="btn-sunarp-green btn-reload-tabla"><i
+          class="fa fa-refresh icon-sunarp"></i>Actualizar</button>
+      <button (click)="accionArchivo(1)" style="margin-right: 20px;" type="button" class="btn-sunarp-cyan btn-reload-tabla"><i
+          class="fa fa-file-archive-o icon-sunarp"></i>Crear Guía</button>
+    </div>
+  </div>
+</div>
+<div class="mt-2">
+  <div class="table-responsive">
+    <table datatable class="table thead-sunarp" datatable [dtOptions]="datatable_archivos"
+      [dtTrigger]="datatable_dtTrigger_archivos">
+      <thead>
+        <tr>
+          <th style="width: 30px" class="text-center">N°</th>
+          <th class="text-center">Nombre</th>
+          <th class="text-center">Descripción</th>
+          <th class="text-center">Tipo</th>
+          <th class="text-center">Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template #modal_ver_archivo let-c="close" let-d="dismiss">
+  <div class="modal-content">
+    <div class="modal-header bg-sunarp-gray-dark">
+      <h3 class="modal-title h3-sunarp text-white">EPICSBOT</h3>
+      <button tabindex="-1" type="button" class="close" aria-label="Close"
+        style="overflow:hidden; position: absolute; right: 30px; top: 11px;background-color: transparent;border: 0px;" (click)="modal_ver_archivo_va.close();">
+        <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body pl-5 pb-4 pr-5 pt-4">
+      <h2 class="title-typ-devo text-center" style="font-size: 35px;">{{tipoAccion==1?'AGREGAR':'EDITAR'}} <span class="text-sunarp-red">GUÍA</span>
+      </h2>
+      <form [formGroup]="formGuia">
+        <div class="row">
+          <div class="col-md-12 col-lg-12">
+            <div class="row">
+              <div class="col-lg-12 col-md-12 mt-2">
+                <label class="label-sunarp">Nombre de la Guía</label>
+                <input formControlName="nombre" maxlength="250" type="text" class="form-control-sunarp">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 col-md-12 mt-2">
+                <label class="label-sunarp">Descripción de la Guía</label>
+                <textarea maxlength="250" formControlName="descripcion" class="form-control-sunarp"></textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 col-md-12 mt-2">
+                <label class="label-sunarp">Archivo</label><br>
+                <input accept="application/pdf" (change)="onFileSelected($event)" type="file" class="form-contrl-sunarp">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+    <div class="modal-footer d-flex justify-content-center">
+      <button *ngIf="tipoAccion==1" [disabled]="!(this.formGuia.valid && this.selectedFile)" (click)="guardarArchivo()" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Agregar Guía</button>
+      <button *ngIf="tipoAccion==2" [disabled]="!(this.formGuia.valid && this.selectedFile)" (click)="guardarArchivo()" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Editar Guía</button>
+      <button (click)="modal_ver_archivo_va.close();" type="button" class="btn-sunarp-red"><i
+          class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
+    </div>
+  </div>
+</ng-template>

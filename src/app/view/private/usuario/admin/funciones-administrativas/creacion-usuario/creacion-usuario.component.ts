@@ -1,10 +1,13 @@
-import { Component, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DataTableDirective } from 'angular-datatables';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { Subject } from 'rxjs';
+import { AdminService } from 'src/app/service/admin.service';
 
-import { languageDataTable } from 'src/app/util/helpers';
+import { alertNotificacion, languageDataTable } from 'src/app/util/helpers';
 
 @Component({
   selector: 'app-creacion-usuario',
@@ -14,12 +17,28 @@ import { languageDataTable } from 'src/app/util/helpers';
 export class CreacionUsuarioComponent {
 
   listaUsuario :any = [];
+  constructor(
+    private modalservice: NgbModal,
+    private ref: ChangeDetectorRef,
+    private adminService:AdminService,
+    private spinner: NgxSpinnerService,
+  ) { }
   @ViewChildren(DataTableDirective) private dtElements;
   datatable_usuario: DataTables.Settings = {};
 
+  formBusqueda = new FormGroup({
+    nombre: new FormControl(""),
+    apellidoPaterno: new FormControl(""),
+    apellidoMaterno: new FormControl(""),
+    usuario: new FormControl(""),
+  });
+  get fBus() {
+    return this.formBusqueda.controls;
+  }
+  fBusValid = false;
+
+
   datatable_dtTrigger_usuario: Subject<ADTSettings> = new Subject<ADTSettings>();
-
-
 
   formRegistro = new FormGroup({
     inicio: new FormControl("2022-10-01",[Validators.required]),
@@ -46,15 +65,15 @@ export class CreacionUsuarioComponent {
         { data: 'usuario' },
         { data: 'usuario' },
         { data: 'nombre' },
-        { data: 'paterno' },
-        { data: 'materno' },
-        { data: 'codAlumno' },
+        { data: 'apellido_paterno' },
+        { data: 'apellido_materno' },
+        { data: 'codigo' },
         { data: 'email' },
-        { data: 'telfcel' },
+        { data: 'telefono' },
         { data: 'carrera' },
         {
           data: 'usuario', render: (data: any, type: any, full: any) => {
-            return '<div class="btn-group"><button type="button" class="btn-sunarp-green ver_deta_soli"><i class="fa fa-eye mr-2" aria-hidden="true"></i>Ver</button></div';
+            return '<div class="btn-group"><button type="button" class="btn-sunarp-green ver_deta_soli mr-3"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></div';
           }
         },
       ],
@@ -77,11 +96,48 @@ export class CreacionUsuarioComponent {
   ngAfterViewInit() {
     setTimeout(() => {
       this.datatable_dtTrigger_usuario.next(this.datatable_usuario);
+      this.buscar()
     }, 200);
   }
-
 
   ngOnDestroy(): void {
     this.datatable_dtTrigger_usuario.unsubscribe();
   }
+
+  buscar(){
+    let valores = this.formBusqueda.getRawValue();
+    let valoresEnMayusculas = Object.keys(valores).reduce((acc, key) => {
+      acc[key] = valores[key] ? valores[key].toString().toUpperCase() : valores[key];
+      return acc;
+    }, {});
+    this.adminService.listarUsuarios(valoresEnMayusculas).subscribe(resp => {
+      this.spinner.show();
+      this.listaUsuario=[];
+      if(resp.cod===1){
+        this.listaUsuario=resp.list;
+      }
+      else{
+        alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+      }
+      this.recargarTabla();
+      this.spinner.hide();
+    });
+  }
+
+  limpiar(){
+    this.formBusqueda.reset();
+    setTimeout(() => {
+      this.buscar()
+    }, 200);
+  }
+  
+
+  recargarTabla() {
+    let tabla_ren = this.dtElements._results[0].dtInstance;
+    tabla_ren.then((dtInstance: DataTables.Api) => {
+      dtInstance.search('').clear().rows.add(this.listaUsuario).draw();
+    });
+    this.ref.detectChanges();
+  }
+
 }

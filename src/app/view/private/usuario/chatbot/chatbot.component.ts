@@ -16,10 +16,10 @@ export class ChatbotComponent implements AfterViewChecked {
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
-  constructor(private chatBotService:ChatBotService) {}
+  constructor(private chatBotService: ChatBotService) {}
 
   ngOnInit(){
-    this.generarEnvio("Hola que tal");
+
   }
 
   ngAfterViewChecked() {
@@ -27,15 +27,15 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   enviarMensaje() {
-    this.generarEnvio( this.userInputControl.value);
+    this.generarEnvio(this.userInputControl.value);
   }
 
-  generarEnvio(userInput:string){
+  generarEnvio(userInput: string) {
     if (userInput && userInput.trim()) {
       this.messages.push({ sender: 'user', text: userInput });
       this.loading = true;
 
-      let request ={mensaje:userInput};
+      let request = { mensaje: userInput };
 
       this.chatBotService.enviarMensaje(request).subscribe(
         response => {
@@ -73,5 +73,8 @@ export class ChatbotComponent implements AfterViewChecked {
         this.currentBotMessage = '';
       }
     }, 20);
+  }
+  seleccionarOpcion(opcion: string) {
+    this.generarEnvio( opcion);
   }
 }

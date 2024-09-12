@@ -35,7 +35,7 @@ export class PrivateLayoutComponent {
     private ref: ChangeDetectorRef,
     private router: Router,
     private modalService: NgbModal,
-    private _authService:AuthService
+    public _authService:AuthService
 
   ) {
     this.innerWidth = window.innerWidth;
@@ -79,6 +79,10 @@ export class PrivateLayoutComponent {
   }
   verFuncionesAdministrativas(){
     this.router.navigate(["/usuario/admin/funciones"]);
+  }
+
+  verPermisos(){
+    return this._authService.obtenerRol();
   }
 
 }
