@@ -2,7 +2,7 @@
   <div class="col-md-12 col-lg-12">
     <div class="w-100 mt-4">
       <button (click)="buscar()" style="margin-right: 20px;" type="button" class="btn-sunarp-green btn-reload-tabla"><i
-          class="fa fa-refresh icon-sunarp"></i>Actualizar</button>
+          class="fa fa-refresh icon-sunarp"></i>Refrescar</button>
       <button (click)="accionArchivo(1)" style="margin-right: 20px;" type="button" class="btn-sunarp-cyan btn-reload-tabla"><i
           class="fa fa-file-archive-o icon-sunarp"></i>Crear Guía</button>
     </div>
@@ -55,10 +55,15 @@
                 <textarea maxlength="250" formControlName="descripcion" class="form-control-sunarp"></textarea>
               </div>
             </div>
+            <div *ngIf="tipoAccion==2" class="row">
+              <div class="col-lg-12 col-md-12 mt-2">
+                <span class="text-sunarp-cyan">Archivo : {{this.guiaModel.nombre_archivo}}</span>
+              </div>
+            </div>
             <div class="row">
               <div class="col-lg-12 col-md-12 mt-2">
-                <label class="label-sunarp">Archivo</label><br>
-                <input accept="application/pdf" (change)="onFileSelected($event)" type="file" class="form-contrl-sunarp">
+                <label class="label-sunarp">{{tipoAccion==1?'Archivo':'Modificar Archivo'}}</label><br>
+                <input accept="application/pdf" (change)="onFileSelected($event)" type="file" class="form-control-sunarp">
               </div>
             </div>
           </div>
@@ -67,8 +72,8 @@
 
     </div>
     <div class="modal-footer d-flex justify-content-center">
-      <button *ngIf="tipoAccion==1" [disabled]="!(this.formGuia.valid && this.selectedFile)" (click)="guardarArchivo()" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Agregar Guía</button>
-      <button *ngIf="tipoAccion==2" [disabled]="!(this.formGuia.valid)" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Editar Guía</button>
+      <button *ngIf="tipoAccion==1" [disabled]="!(this.formGuia.valid && this.selectedFile)" (click)="guardarArchivo()" type="button" class="btn-sunarp-green"><i class="fa fa-plus icon-sunarp mr-2"></i>Crear Guía</button>
+      <button *ngIf="tipoAccion==2" [disabled]="!(this.formGuia.valid)" (click)="editarArchivo()" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Editar Guía</button>
       <button (click)="modal_ver_archivo_va.close();" type="button" class="btn-sunarp-red"><i
           class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
     </div>

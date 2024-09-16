@@ -45,12 +45,15 @@ export class CreacionGuiaComponent {
   }
 
   formGuia = new FormGroup({
+    id: new FormControl(null),
     nombre : new FormControl("",[Validators.required]),
     descripcion : new FormControl("",[Validators.required]),
     idTipoArchivo: new FormControl(1)
   });
 
   selectedFile: File | null = null;
+
+  guiaModel:any=null;
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -147,31 +150,43 @@ export class CreacionGuiaComponent {
     this.adminService.buscarArchivo(data.id).subscribe(resp => {
       if(resp.cod===1){
         this.accionArchivo(2);
-        this.formGuia.controls.nombre.setValue(resp.model.nombre);
-        this.formGuia.controls.descripcion.setValue(resp.model.descripcion)
+        this.guiaModel=resp.model;
+        this.formGuia.controls.nombre.setValue(this.guiaModel.nombre);
+        this.formGuia.controls.descripcion.setValue(this.guiaModel.descripcion)
       }
       else{
         alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
       }
-
       this.spinner.hide();
     });
   }
 
   guardarArchivo(){
     if (this.formGuia.valid && this.selectedFile) {
-      const formValues = this.formGuia.value;
-      this.spinner.show();
-      this.adminService.crearArchivo(formValues, this.selectedFile).subscribe(resp => {
-        if(resp.cod===1){
-          alertNotificacion("Se ha creado la Guía satisfactoriamente","success");
-          this.modal_ver_archivo_va.close();
-          this.buscar();
+      Swal.fire({
+        icon: "warning",
+        title: "¿Desea crear la guía?",
+        text: "Por favor verificar todos los datos antes de continuar",
+        confirmButtonText: '<span style="padding: 0 12px;">Sí, crear</span>',
+        showCancelButton: true,
+        cancelButtonText: 'No, cancelar',
+        cancelButtonColor: '#EB3219',
+        allowEnterKey: false,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const formValues = this.formGuia.value;
+          this.spinner.show();
+          this.adminService.crearArchivo(formValues, this.selectedFile).subscribe(resp => {
+            if(resp.cod===1){
+              this.modal_ver_archivo_va.close();
+              this.buscar();
+            }
+            alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+            this.spinner.hide();
+          });
         }
-        else{
-          alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
-        }
-        this.spinner.hide();
       });
     }
   }
@@ -185,7 +200,7 @@ export class CreacionGuiaComponent {
   eliminarArchivo(data:any){
     Swal.fire({
       icon: "warning",
-      title: "¿Desea eliminar la guía?",
+      title: "¿Desea eliminar la guía "+data.nombre+"?",
       text: "Esta acción es permanente",
       confirmButtonText: '<span style="padding: 0 12px;">Sí, eliminar</span>',
       showCancelButton: true,
@@ -220,5 +235,37 @@ export class CreacionGuiaComponent {
   }
   pdfLoaded(){
     this.spinner.hide();
+  }
+
+  editarArchivo(){
+    if (this.formGuia.valid) {
+
+      Swal.fire({
+        icon: "warning",
+        title: "¿Desea editar la guía?",
+        text: "Por favor verificar todos los datos antes de continuar",
+        confirmButtonText: '<span style="padding: 0 12px;">Sí, editar</span>',
+        showCancelButton: true,
+        cancelButtonText: 'No, cancelar',
+        cancelButtonColor: '#EB3219',
+        allowEnterKey: false,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const formValues = this.formGuia.value;
+          formValues.id = this.guiaModel.id;
+          this.spinner.show();
+          this.adminService.editarArchivo(formValues, this.selectedFile).subscribe(resp => {
+            if(resp.cod===1){
+              this.modal_ver_archivo_va.close();
+              this.buscar();
+            }
+            alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+            this.spinner.hide();
+          });
+        }
+      });
+    }
   }
 }
