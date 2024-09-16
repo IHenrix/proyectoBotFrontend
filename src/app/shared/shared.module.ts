@@ -8,6 +8,7 @@ import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
   declarations: [],
@@ -21,7 +22,8 @@ import {MatIconModule} from '@angular/material/icon';
     NgbNavModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    NgxExtendedPdfViewerModule
   ],
   exports:[
     FormsModule,
@@ -34,7 +36,8 @@ import {MatIconModule} from '@angular/material/icon';
     NgbNavModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    NgxExtendedPdfViewerModule
 
   ]
 })

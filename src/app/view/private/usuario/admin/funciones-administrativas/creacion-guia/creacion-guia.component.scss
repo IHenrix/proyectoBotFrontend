@@ -1,0 +1,7 @@
+@import "src/assets/sass/general.scss";
+
+
+
+:host::ng-deep table.dataTable thead {
+  background-color: #4b626c !important;
+}

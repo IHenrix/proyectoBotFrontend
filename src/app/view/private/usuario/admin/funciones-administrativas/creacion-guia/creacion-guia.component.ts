@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, SecurityContext, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { DataTableDirective } from 'angular-datatables';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
@@ -20,7 +21,9 @@ export class CreacionGuiaComponent {
   @ViewChild('modal_ver_archivo') modal_ver_archivo: NgbModalRef;
   modal_ver_archivo_va: any;
 
-
+  @ViewChild('modal_ver_documento') modal_ver_documento: NgbModalRef;
+  modal_ver_documento_va: any;
+  contenidoArchivoVisor: any;
   listaArchivos :any = [];
   tipoAccion:number;
   constructor(
@@ -28,6 +31,7 @@ export class CreacionGuiaComponent {
     private ref: ChangeDetectorRef,
     private adminService:AdminService,
     private spinner: NgxSpinnerService,
+    private sanitizer: DomSanitizer
   ) { }
   @ViewChildren(DataTableDirective) private dtElements;
   datatable_archivos: DataTables.Settings = {};
@@ -41,13 +45,12 @@ export class CreacionGuiaComponent {
   }
 
   formGuia = new FormGroup({
-    nombre : new FormControl(""),
-    descripcion : new FormControl(""),
+    nombre : new FormControl("",[Validators.required]),
+    descripcion : new FormControl("",[Validators.required]),
     idTipoArchivo: new FormControl(1)
   });
 
   selectedFile: File | null = null;
-
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -65,7 +68,7 @@ export class CreacionGuiaComponent {
         { data: 'tipo' },
         {
           data: 'id', render: (data: any, type: any, full: any) => {
-            return '<div class="btn-group"><button type="button" class="btn-sunarp-green editar_archivo"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button><button type="button" class="btn-sunarp-red eliminar_archivo mr-3"><i class="fa fa-trash" aria-hidden="true"></i> Eliminar</button></div';
+            return '<div class="btn-group"><button title="Ver Guía" type="button" style ="margin-right:5px;" class="btn-sunarp-green ver_documento"><i class="fa fa-file" aria-hidden="true"></i></button><button title="Editar Guía" type="button" style ="margin-right:5px;" class="btn-sunarp-cyan editar_archivo"><i class="fa fa-pencil" aria-hidden="true"></i></button><button type="button" title="Eliminar Guía" class="btn-sunarp-red eliminar_archivo mr-3"><i class="fa fa-trash" aria-hidden="true"></i></button></div';
           }
         },
       ],
@@ -74,6 +77,9 @@ export class CreacionGuiaComponent {
         { className: "text-center align-middle", targets: '_all' }
       ],
       rowCallback: (row: Node, data: any[] | Object, index: number) => {
+        $('.ver_documento', row).off().on('click', () => {
+          this.verDocumento(data);
+        });
         $('.editar_archivo', row).off().on('click', () => {
           this.mostrarEdicionArchivo(data);
         });
@@ -101,9 +107,13 @@ export class CreacionGuiaComponent {
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-    if (file) {
+    if(file === undefined || file === null){
+      this.selectedFile=null;
+    }
+    else{
       this.selectedFile = file;
     }
+    console.log( this.selectedFile )
   }
 
 
@@ -147,7 +157,7 @@ export class CreacionGuiaComponent {
       this.spinner.hide();
     });
   }
-  
+
   guardarArchivo(){
     if (this.formGuia.valid && this.selectedFile) {
       const formValues = this.formGuia.value;
@@ -194,5 +204,21 @@ export class CreacionGuiaComponent {
         });
       }
     });
+  }
+
+  verDocumento(data:any){
+    this.spinner.show();
+    this.adminService.obtenerDocumento(data.id).subscribe(resp => {
+      if(resp.cod===1){
+        this.contenidoArchivoVisor = String(resp.model)
+        this.modal_ver_documento_va = this.modalservice.open(this.modal_ver_documento, { ...this.modalOpciones, size: 'xl' });
+      }
+      else{
+        alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+      }
+    });
+  }
+  pdfLoaded(){
+    this.spinner.hide();
   }
 }

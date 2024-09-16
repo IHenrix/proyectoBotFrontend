@@ -31,6 +31,7 @@
     "highcharts-angular": "^4.0.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.4",
+    "ngx-extended-pdf-viewer": "^18.1.14",
     "ngx-spinner": "^16.0.2",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.10.1",

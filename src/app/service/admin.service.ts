@@ -13,7 +13,7 @@ export class AdminService {
     }
 
     private baseEndpoint = environment.urlApiMicroservices.domain + '/admin';
-    
+
     listarUsuarios(data: any): Observable<any> {
         return this.http.post<any>(this.baseEndpoint + '/listarUsuarios', JSON.stringify(data))
     }
@@ -33,7 +33,7 @@ export class AdminService {
         params = params.append('usuarioId', usuarioId);
         return this.http.get<any>(this.baseEndpoint + '/eliminarUsuario', { params: params })
     }
-    
+
     listarArchivos(data: any): Observable<any> {
         return this.http.post<any>(this.baseEndpoint + '/listarArchivos', JSON.stringify(data))
     }
@@ -56,7 +56,7 @@ export class AdminService {
         formData.append('nombre', data.nombre);
         formData.append('descripcion', data.descripcion);
         formData.append('idTipoArchivo', data.idTipoArchivo);
-        formData.append('archivo', file); 
+        formData.append('archivo', file);
         return this.http.post<any>(`${this.baseEndpoint}/editarArchivo`, formData);
       }
     eliminarArchivo(idArchivo: number): Observable<any> {

@@ -10,7 +10,7 @@
 </div>
 <div class="mt-2">
   <div class="table-responsive">
-    <table datatable class="table thead-sunarp" datatable [dtOptions]="datatable_archivos"
+    <table datatable class="table table-soli-devo" datatable [dtOptions]="datatable_archivos"
       [dtTrigger]="datatable_dtTrigger_archivos">
       <thead>
         <tr>
@@ -68,8 +68,38 @@
     </div>
     <div class="modal-footer d-flex justify-content-center">
       <button *ngIf="tipoAccion==1" [disabled]="!(this.formGuia.valid && this.selectedFile)" (click)="guardarArchivo()" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Agregar Guía</button>
-      <button *ngIf="tipoAccion==2" [disabled]="!(this.formGuia.valid && this.selectedFile)" (click)="guardarArchivo()" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Editar Guía</button>
+      <button *ngIf="tipoAccion==2" [disabled]="!(this.formGuia.valid)" type="button" class="btn-sunarp-cyan"><i class="fa fa-plus icon-sunarp mr-2"></i>Editar Guía</button>
       <button (click)="modal_ver_archivo_va.close();" type="button" class="btn-sunarp-red"><i
+          class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modal_ver_documento let-c="close" let-d="dismiss">
+  <div class="modal-content">
+    <div class="modal-header bg-sunarp-gray-dark">
+      <h3 class="modal-title h3-sunarp text-white">VISOR DE GUÍA</h3>
+      <button tabindex="-1" type="button" class="close" aria-label="Close"
+        style="overflow:hidden; position: absolute; right: 30px; top: 11px;background-color: transparent;border: 0px;" (click)="modal_ver_documento_va.close();">
+        <span style="font-size:35px !important;" class="text-white">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body pl-5 pb-4 pr-5 pt-4">
+      <ngx-extended-pdf-viewer
+      [base64Src]="contenidoArchivoVisor"
+      [showToolbar]="false"
+      [showPresentationModeButton]="true"
+      [showDownloadButton]="true"
+      [showSecondaryToolbarButton]="false"
+      [showOpenFileButton]="false"
+      (pdfLoaded)="pdfLoaded()"
+      class="pdf-viewer-custom"
+      >
+      </ngx-extended-pdf-viewer>
+    </div>
+    <div class="modal-footer d-flex justify-content-center">
+
+      <button (click)="modal_ver_documento_va.close();" type="button" class="btn-sunarp-red"><i
           class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
     </div>
   </div>
