@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { DataTableDirective } from 'angular-datatables';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subject } from 'rxjs';
+import { CodNombre } from 'src/app/interfaces/auth/private/cod-nombre';
 import { AdminService } from 'src/app/service/admin.service';
 
 import { alertNotificacion, languageDataTable } from 'src/app/util/helpers';
@@ -15,6 +16,9 @@ import { alertNotificacion, languageDataTable } from 'src/app/util/helpers';
   styleUrls: ['./creacion-usuario.component.scss']
 })
 export class CreacionUsuarioComponent {
+
+  @ViewChild('modal_ver_usuario') modal_ver_usuario: NgbModalRef;
+  modal_ver_usuario_va: any;
 
   listaUsuario :any = [];
   constructor(
@@ -32,25 +36,36 @@ export class CreacionUsuarioComponent {
     apellidoMaterno: new FormControl(""),
     usuario: new FormControl(""),
   });
-  get fBus() {
-    return this.formBusqueda.controls;
-  }
-  fBusValid = false;
 
+  listaSexo: CodNombre<string>[] = [
+    { cod: "M", nombre: "MASCULINO" },
+    { cod: "F", nombre: "FEMENINO" }
+  ];
+
+  listaCarrera: CodNombre<string>[] = [];
+
+  formUsuario = new FormGroup({
+    usuario: new FormControl(""),
+    password: new FormControl(""),
+    apellidoPaterno: new FormControl(""),
+    apellidoMaterno: new FormControl(""),
+    nombre: new FormControl(""),
+    sexo: new FormControl(""),
+    codigo: new FormControl(""),
+    email: new FormControl(""),
+    telefono: new FormControl(""),
+    idCarrera: new FormControl(""),
+    rol: new FormControl("")
+  });
+  modalOpciones: NgbModalOptions = {
+    centered: true,
+    animation: true,
+    backdrop: 'static',
+    keyboard: false
+  }
 
   datatable_dtTrigger_usuario: Subject<ADTSettings> = new Subject<ADTSettings>();
-
-  formRegistro = new FormGroup({
-    inicio: new FormControl("2022-10-01",[Validators.required]),
-    fin: new FormControl("2022-12-31",[Validators.required]),
-    tipo_obj: new FormControl(""),
-    anho_obj: new FormControl(""),
-    nu_objt: new FormControl(""),
-    fech_pag: new FormControl(""),
-    tipo_estado : new FormControl(""),
-    tramite : new FormControl("")
-  });
-  formValid = false;
+  tipoAccion:number;
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -73,7 +88,7 @@ export class CreacionUsuarioComponent {
         { data: 'carrera' },
         {
           data: 'usuario', render: (data: any, type: any, full: any) => {
-            return '<div class="btn-group"><button type="button" class="btn-sunarp-green ver_deta_soli mr-3"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></div';
+            return '<div class="btn-group"><button type="button" style ="margin-right:5px;"  class="btn-sunarp-cyan edit_usu mr-3"><i class="fa fa-pencil" aria-hidden="true"></i></button><button type="button" class="btn-sunarp-red eliminar_usu mr-3"><i class="fa fa-trash" aria-hidden="true"></i></button></div';
           }
         },
       ],
@@ -90,6 +105,7 @@ export class CreacionUsuarioComponent {
       }
     }
     });
+    this.adminService.listaCarrera().subscribe(listaCarrera => this.listaCarrera=listaCarrera);
   }
 
 
@@ -110,8 +126,8 @@ export class CreacionUsuarioComponent {
       acc[key] = valores[key] ? valores[key].toString().toUpperCase() : valores[key];
       return acc;
     }, {});
+    this.spinner.show();
     this.adminService.listarUsuarios(valoresEnMayusculas).subscribe(resp => {
-      this.spinner.show();
       this.listaUsuario=[];
       if(resp.cod===1){
         this.listaUsuario=resp.list;
@@ -131,7 +147,13 @@ export class CreacionUsuarioComponent {
     }, 200);
   }
   
-
+  abrirModal(){
+    this.modal_ver_usuario_va = this.modalservice.open(this.modal_ver_usuario, { ...this.modalOpciones,size: 'xl' });
+  }
+  accionArchivo(tipoAccion: number) {
+    this.tipoAccion = tipoAccion;
+    this.abrirModal();
+  }
   recargarTabla() {
     let tabla_ren = this.dtElements._results[0].dtInstance;
     tabla_ren.then((dtInstance: DataTables.Api) => {

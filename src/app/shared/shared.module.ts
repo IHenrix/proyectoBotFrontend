@@ -9,6 +9,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [],
@@ -23,7 +24,8 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    NgxExtendedPdfViewerModule
+    NgxExtendedPdfViewerModule,
+    NgSelectModule
   ],
   exports:[
     FormsModule,
@@ -37,8 +39,8 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    NgxExtendedPdfViewerModule
-
+    NgxExtendedPdfViewerModule,
+    NgSelectModule
   ]
 })
 export class SharedModule { }

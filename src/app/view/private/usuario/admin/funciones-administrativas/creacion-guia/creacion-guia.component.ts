@@ -24,12 +24,12 @@ export class CreacionGuiaComponent {
   @ViewChild('modal_ver_documento') modal_ver_documento: NgbModalRef;
   modal_ver_documento_va: any;
   contenidoArchivoVisor: any;
-  listaArchivos :any = [];
-  tipoAccion:number;
+  listaArchivos: any = [];
+  tipoAccion: number;
   constructor(
     private modalservice: NgbModal,
     private ref: ChangeDetectorRef,
-    private adminService:AdminService,
+    private adminService: AdminService,
     private spinner: NgxSpinnerService,
     private sanitizer: DomSanitizer
   ) { }
@@ -46,53 +46,53 @@ export class CreacionGuiaComponent {
 
   formGuia = new FormGroup({
     id: new FormControl(null),
-    nombre : new FormControl("",[Validators.required]),
-    descripcion : new FormControl("",[Validators.required]),
+    nombre: new FormControl("", [Validators.required]),
+    descripcion: new FormControl("", [Validators.required]),
     idTipoArchivo: new FormControl(1)
   });
 
   selectedFile: File | null = null;
 
-  guiaModel:any=null;
+  guiaModel: any = null;
 
   ngOnInit(): void {
     setTimeout(() => {
-    this.datatable_archivos = {
-      dom: '<"top"if>rt<"bottom">p<"clear">',
-      paging: true,
-      pagingType: 'full_numbers',
-      pageLength: 10,
-      responsive: true,
-      language: languageDataTable("Guia"),
-      columns: [
-        { data: 'id' },
-        { data: 'nombre' },
-        { data: 'descripcion' },
-        { data: 'tipo' },
-        {
-          data: 'id', render: (data: any, type: any, full: any) => {
-            return '<div class="btn-group"><button title="Ver Guía" type="button" style ="margin-right:5px;" class="btn-sunarp-green ver_documento"><i class="fa fa-file" aria-hidden="true"></i></button><button title="Editar Guía" type="button" style ="margin-right:5px;" class="btn-sunarp-cyan editar_archivo"><i class="fa fa-pencil" aria-hidden="true"></i></button><button type="button" title="Eliminar Guía" class="btn-sunarp-red eliminar_archivo mr-3"><i class="fa fa-trash" aria-hidden="true"></i></button></div';
-          }
-        },
-      ],
-      columnDefs: [
-        { orderable: false, className: "text-center align-middle", targets: 0, },
-        { className: "text-center align-middle", targets: '_all' }
-      ],
-      rowCallback: (row: Node, data: any[] | Object, index: number) => {
-        $('.ver_documento', row).off().on('click', () => {
-          this.verDocumento(data);
-        });
-        $('.editar_archivo', row).off().on('click', () => {
-          this.mostrarEdicionArchivo(data);
-        });
-        $('.eliminar_archivo', row).off().on('click', () => {
-          this.eliminarArchivo(data);
-        })
-        row.childNodes[0].textContent = String(index + 1);
-        return row;
+      this.datatable_archivos = {
+        dom: '<"top"if>rt<"bottom">p<"clear">',
+        paging: true,
+        pagingType: 'full_numbers',
+        pageLength: 10,
+        responsive: true,
+        language: languageDataTable("Guia"),
+        columns: [
+          { data: 'id' },
+          { data: 'nombre' },
+          { data: 'descripcion' },
+          { data: 'tipo' },
+          {
+            data: 'id', render: (data: any, type: any, full: any) => {
+              return '<div class="btn-group"><button title="Ver Guía" type="button" style ="margin-right:5px;" class="btn-sunarp-green ver_documento"><i class="fa fa-file" aria-hidden="true"></i></button><button title="Editar Guía" type="button" style ="margin-right:5px;" class="btn-sunarp-cyan editar_archivo"><i class="fa fa-pencil" aria-hidden="true"></i></button><button type="button" title="Eliminar Guía" class="btn-sunarp-red eliminar_archivo mr-3"><i class="fa fa-trash" aria-hidden="true"></i></button></div';
+            }
+          },
+        ],
+        columnDefs: [
+          { orderable: false, className: "text-center align-middle", targets: 0, },
+          { className: "text-center align-middle", targets: '_all' }
+        ],
+        rowCallback: (row: Node, data: any[] | Object, index: number) => {
+          $('.ver_documento', row).off().on('click', () => {
+            this.verDocumento(data);
+          });
+          $('.editar_archivo', row).off().on('click', () => {
+            this.mostrarEdicionArchivo(data);
+          });
+          $('.eliminar_archivo', row).off().on('click', () => {
+            this.eliminarArchivo(data);
+          })
+          row.childNodes[0].textContent = String(index + 1);
+          return row;
+        }
       }
-    }
     });
   }
 
@@ -110,24 +110,24 @@ export class CreacionGuiaComponent {
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-    if(file === undefined || file === null){
-      this.selectedFile=null;
+    if (file === undefined || file === null) {
+      this.selectedFile = null;
     }
-    else{
+    else {
       this.selectedFile = file;
     }
-    console.log( this.selectedFile )
+    console.log(this.selectedFile)
   }
 
 
-  buscar(){
+  buscar() {
     this.spinner.show();
-    this.adminService.listarArchivos({idTipoArchivo:null}).subscribe(resp => {
-      this.listaArchivos=[];
-      if(resp.cod===1){
-        this.listaArchivos=resp.list;
+    this.adminService.listarArchivos({ idTipoArchivo: null }).subscribe(resp => {
+      this.listaArchivos = [];
+      if (resp.cod === 1) {
+        this.listaArchivos = resp.list;
       }
-      else{
+      else {
         //alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
       }
       this.recargarTabla();
@@ -135,33 +135,33 @@ export class CreacionGuiaComponent {
     });
   }
 
-  accionArchivo(tipoAccion:number){
-    this.tipoAccion=tipoAccion;
+  accionArchivo(tipoAccion: number) {
+    this.tipoAccion = tipoAccion;
     this.formGuia.controls.nombre.setValue("");
     this.formGuia.controls.descripcion.setValue("");
-    this.selectedFile=null;
+    this.selectedFile = null;
     this.abrirModal();
   }
 
-  abrirModal(){
+  abrirModal() {
     this.modal_ver_archivo_va = this.modalservice.open(this.modal_ver_archivo, { ...this.modalOpciones });
   }
-  mostrarEdicionArchivo(data:any){
+  mostrarEdicionArchivo(data: any) {
     this.adminService.buscarArchivo(data.id).subscribe(resp => {
-      if(resp.cod===1){
+      if (resp.cod === 1) {
         this.accionArchivo(2);
-        this.guiaModel=resp.model;
+        this.guiaModel = resp.model;
         this.formGuia.controls.nombre.setValue(this.guiaModel.nombre);
         this.formGuia.controls.descripcion.setValue(this.guiaModel.descripcion)
       }
-      else{
-        alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+      else {
+        alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
       }
       this.spinner.hide();
     });
   }
 
-  guardarArchivo(){
+  guardarArchivo() {
     if (this.formGuia.valid && this.selectedFile) {
       Swal.fire({
         icon: "warning",
@@ -179,11 +179,11 @@ export class CreacionGuiaComponent {
           const formValues = this.formGuia.value;
           this.spinner.show();
           this.adminService.crearArchivo(formValues, this.selectedFile).subscribe(resp => {
-            if(resp.cod===1){
+            if (resp.cod === 1) {
               this.modal_ver_archivo_va.close();
               this.buscar();
             }
-            alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+            alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
             this.spinner.hide();
           });
         }
@@ -197,10 +197,10 @@ export class CreacionGuiaComponent {
     });
     this.ref.detectChanges();
   }
-  eliminarArchivo(data:any){
+  eliminarArchivo(data: any) {
     Swal.fire({
       icon: "warning",
-      title: "¿Desea eliminar la guía "+data.nombre+"?",
+      title: "¿Desea eliminar la guía " + data.nombre + "?",
       text: "Esta acción es permanente",
       confirmButtonText: '<span style="padding: 0 12px;">Sí, eliminar</span>',
       showCancelButton: true,
@@ -213,7 +213,7 @@ export class CreacionGuiaComponent {
       if (result.isConfirmed) {
         this.spinner.show();
         this.adminService.eliminarArchivo(data.id).subscribe(resp => {
-          alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+          alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
           this.buscar();
           this.spinner.hide();
         });
@@ -221,23 +221,23 @@ export class CreacionGuiaComponent {
     });
   }
 
-  verDocumento(data:any){
+  verDocumento(data: any) {
     this.spinner.show();
     this.adminService.obtenerDocumento(data.id).subscribe(resp => {
-      if(resp.cod===1){
+      if (resp.cod === 1) {
         this.contenidoArchivoVisor = String(resp.model)
         this.modal_ver_documento_va = this.modalservice.open(this.modal_ver_documento, { ...this.modalOpciones, size: 'xl' });
       }
-      else{
-        alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+      else {
+        alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
       }
     });
   }
-  pdfLoaded(){
+  pdfLoaded() {
     this.spinner.hide();
   }
 
-  editarArchivo(){
+  editarArchivo() {
     if (this.formGuia.valid) {
 
       Swal.fire({
@@ -257,11 +257,11 @@ export class CreacionGuiaComponent {
           formValues.id = this.guiaModel.id;
           this.spinner.show();
           this.adminService.editarArchivo(formValues, this.selectedFile).subscribe(resp => {
-            if(resp.cod===1){
+            if (resp.cod === 1) {
               this.modal_ver_archivo_va.close();
               this.buscar();
             }
-            alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+            alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
             this.spinner.hide();
           });
         }
