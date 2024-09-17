@@ -1,16 +1,14 @@
 <div class="chat-container">
   <div class="messages-container" #messagesContainer>
     <div class="bot-message">
-      <p>¡Hola! Soy EPICSBot, tu asistente virtual académico. Recuerda que solo puedo responder preguntas relacionadas con tus estudios. No puedo resolver tareas ni ayudarte en evaluaciones. ¿En qué te puedo ayudar hoy? Elige una opción:</p>
-      <button class="option-btn" (click)="seleccionarOpcion('Retroalimentación de Documentos')">Retroalimentación de Documentos</button>
-      <button class="option-btn" (click)="seleccionarOpcion('Consulta sobre mi Proyecto')">Consulta sobre mi Proyecto</button>
-      <button class="option-btn" (click)="seleccionarOpcion('Guías Académicas')">Guías Académicas</button>
-      <button class="option-btn" (click)="seleccionarOpcion('Revisión de Citaciones')">Revisión de Citaciones</button>
-      <button class="option-btn" (click)="seleccionarOpcion('Consulta de Recursos Bibliográficos')">Consulta de Recursos Bibliográficos</button>
+      <p>Hola, soy EPICSBot, tu asistente virtual académico. Mi rol es ayudarte en la formulación de tu proyecto brindándote asesoría. Recuerda que mi objetivo no es que copies o que yo te genere respuestas automáticas que puedas copiar y pegar, sino ayudarte a agilizar la búsqueda de información, darte retroalimentación y guiarte en el proceso de investigación. Elige una opción para empezar:</p>
+      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(1)">Retroalimentación de Documentos</button>
+      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(2)">Consulta sobre mi Proyecto</button>
+      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(3)">Guías Académicas</button>
+      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(4)">Consulta de Recursos Bibliográficos</button>
     </div>
     <div *ngFor="let message of messages" class="message">
-      <div [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
-        {{ message.text }}
+      <div #htmlMensajes [innerHTML]="sanitizer.bypassSecurityTrustHtml(message.text)" [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
       </div>
     </div>
     <div *ngIf="loading" class="bot-message loading">
@@ -18,15 +16,95 @@
         <span></span><span></span><span></span>
       </div>
     </div>
-    <div *ngIf="currentBotMessage" class="bot-message">
-      {{ currentBotMessage }}
-    </div>
+    <div [innerHTML]="sanitizer.bypassSecurityTrustHtml(currentBotMessage)" *ngIf="currentBotMessage" class="bot-message"></div>
   </div>
   <div class="input-container">
-    <button class="attach-btn" title="Adjuntar archivos">
+    <button [ngClass]="{'animate': (accionGlobal===1) && !loadingAction}"  [disabled]="loadingAction" (click)="adjuntarArchivo()" class="attach-btn" title="Adjuntar archivos">
       <i class="fas fa-paperclip"></i>
     </button>
+    <input type="file" #fileInput (change)="archivoSeleccionado($event)" style="display: none;">
     <input [formControl]="userInputControl" (keyup.enter)="enviarMensaje()" placeholder="Escribe tu mensaje..." />
-    <button (click)="enviarMensaje()">Enviar</button>
+    <button [disabled]="loadingAction" (click)="enviarMensaje()">Enviar</button>
   </div>
 </div>
+
+
+
+<ng-template #modal_lista_guias let-c="close" let-d="dismiss">
+  <div class="modal-content">
+    <div class="modal-header bg-sunarp-gray-dark">
+      <h3 class="modal-title h3-sunarp text-white">EPICSBOT</h3>
+      <button tabindex="-1" type="button" class="close" aria-label="Close"
+        style="overflow:hidden; position: absolute; right: 30px; top: 3px;background-color: transparent;border: 0px;"
+        (click)="modal_lista_guias_va.close();">
+        <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body pl-5 pb-4 pr-5 pt-4">
+      <h2 class="title-typ-devo text-center" style="font-size: 35px;"> <span
+          class="text-sunarp-green"> RESULTADO DE BUSQUEDA DE GUIAS</span>
+      </h2>
+      <div class="mt-2">
+        <div class="table-responsive">
+          <table  class="table table-soli-devo">
+            <thead>
+              <tr>
+                <th style="width: 30px" class="text-center">N°</th>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Descripción</th>
+                <th class="text-center">Tipo</th>
+                <th class="text-center">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let archivo of listGuias; let i = index">
+                <td class="text-center">{{ i + 1 }}</td>
+                <td class="text-center">{{ archivo.nombre }}</td>
+                <td class="text-center">{{ archivo.descripcion }}</td>
+                <td class="text-center">{{ archivo.tipo }}</td>
+                <td class="text-center">
+                  <button (click)="verDocumento(archivo.id)" class="btn-sunarp-green">Ver</button>
+                  <button  class="btn-sunarp-cyan">Descargar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+ 
+    </div>
+    <div class="modal-footer d-flex justify-content-center">
+      
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modal_ver_documento let-c="close" let-d="dismiss">
+  <div class="modal-content">
+    <div class="modal-header bg-sunarp-gray-dark">
+      <h3 class="modal-title h3-sunarp text-white">VISOR DE GUÍA</h3>
+      <button tabindex="-1" type="button" class="close" aria-label="Close"
+        style="overflow:hidden; position: absolute; right: 30px; top: 11px;background-color: transparent;border: 0px;" (click)="modal_ver_documento_va.close();">
+        <span style="font-size:35px !important;" class="text-white">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body pl-5 pb-4 pr-5 pt-4">
+      <ngx-extended-pdf-viewer
+      [base64Src]="contenidoArchivoVisor"
+      [showToolbar]="false"
+      [showPresentationModeButton]="true"
+      [showDownloadButton]="true"
+      [showSecondaryToolbarButton]="false"
+      [showOpenFileButton]="false"
+      (pdfLoaded)="pdfLoaded()"
+      class="pdf-viewer-custom"
+      >
+      </ngx-extended-pdf-viewer>
+    </div>
+    <div class="modal-footer d-flex justify-content-center">
+
+      <button (click)="modal_ver_documento_va.close();" type="button" class="btn-sunarp-red"><i
+          class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
+    </div>
+  </div>
+</ng-template>

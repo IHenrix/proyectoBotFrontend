@@ -49,7 +49,7 @@ export class CreacionUsuarioComponent {
   listaCarrera: CodNombre<string>[] = [];
 
   formUsuario = new FormGroup({
-    usuario: new FormControl("",[Validators.required]),
+    usuario: new FormControl("",[Validators.required,this.customvalidator.ValidateLibElecLenght,this.customvalidator.ValidateOnlyNumber]),
     password: new FormControl("",[Validators.required]),
     confirmPassword: new FormControl("",[Validators.required]),
     apellidoPaterno: new FormControl("",[Validators.required]),
@@ -293,7 +293,7 @@ export class CreacionUsuarioComponent {
       icon: "warning",
       title: "¿Desea editar al usuario de "+this.fBus.nombre.value+" "+this.fBus.apellidoPaterno.value+" "+this.fBus.apellidoMaterno.value+"?",
       text: "Por favor verificar todos los datos antes de continuar",
-      confirmButtonText: '<span style="padding: 0 12px;">Sí, crear</span>',
+      confirmButtonText: '<span style="padding: 0 12px;">Sí, editar</span>',
       showCancelButton: true,
       cancelButtonText: 'No, cancelar',
       cancelButtonColor: '#EB3219',

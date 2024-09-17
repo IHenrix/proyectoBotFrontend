@@ -61,7 +61,7 @@
     <div class="modal-header bg-sunarp-gray-dark">
       <h3 class="modal-title h3-sunarp text-white">EPICSBOT</h3>
       <button tabindex="-1" type="button" class="close" aria-label="Close"
-        style="overflow:hidden; position: absolute; right: 30px; top: 11px;background-color: transparent;border: 0px;"
+        style="overflow:hidden; position: absolute; right: 30px; top: 5px;background-color: transparent;border: 0px;"
         (click)="modal_ver_usuario_va.close();">
         <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
       </button>
@@ -152,11 +152,15 @@
             <h5 class="mt-3 text-sunarp-cyan">Datos del Acceso</h5>
             <div class="row">
               <div class="col-lg-6 col-md-12 mt-2">
-                <label class="label-sunarp">Usuario</label>
+                <label class="label-sunarp">Usuario (DNI)</label>
                 <input (input)="convertirEnMayusculas('usuario')" formControlName="usuario" maxlength="250" type="text"
                   class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.usuario.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
+                  <small *ngIf="formBusValid && fBus.usuario.errors?.onlynumber_invalid"
+                  class="invalid-feedback-sunarp p-0 mt-2">Este campo solo debe contener dígitos</small>
+                  <small *ngIf="formBusValid && fBus.usuario.errors?.dni_invalid && fBus.usuario.errors?.onlynumber_invalid==null"
+                  class="invalid-feedback-sunarp p-0 mt-2">El usuario debe tener máximo 8 dígitos</small>                  
               </div>
             </div>
             <div class="row">

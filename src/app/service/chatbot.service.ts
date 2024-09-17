@@ -15,4 +15,8 @@ export class ChatBotService {
     enviarMensaje(data: any): Observable<any> {
       return this.http.post<any>(this.baseEndpoint + '/enviarMensaje', JSON.stringify(data))
    }
+
+   buscarGuias(data: any): Observable<any> {
+    return this.http.post<any>(this.baseEndpoint + '/buscarGuias', JSON.stringify(data))
+   }
 }
