@@ -1,9 +1,9 @@
 import { environment } from 'src/environments/environment';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 
-export function languageDataTable( 
-    infoDetail: string = "registros", 
-    searchText: string = "Buscar: ", 
+export function languageDataTable(
+    infoDetail: string = "registros",
+    searchText: string = "Buscar: ",
     searchPlaceholderText:  string = "Término de búsqueda" ,
     infoFilteredText: string = "búsqueda"
 ) {
@@ -25,15 +25,6 @@ export function languageDataTable(
         loadingRecords:"Cargando...",
         processing:'<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
     }
-}
-
-export function contarRepetidos(cadenaCompleta:string, palabraPorContar:string): number{
-    let contar=0;
-    for(let i=0; i<cadenaCompleta.length; i++){
-      let letra = cadenaCompleta.substring(i,(i+1));
-      if (palabraPorContar == letra) contar++;
-    }
-    return contar;
 }
 
 export function formatMoney(valor: number, decimales: number = 2){
@@ -59,11 +50,19 @@ export function obtenerZona(zona: string): string{
     return desZona;
 }
 
+export function contarRepetidos(cadenaCompleta: string, palabraPorContar: string): number {
+  let contar = 0;
+  for (let i = 0; i < cadenaCompleta.length; i++) {
+      let letra = cadenaCompleta.substring(i, (i + 1));
+      if (palabraPorContar == letra) contar++;
+  }
+  return contar;
+}
 
 export function alertNotificacion(message: string,icon: string = "error", text: string = environment.nameSystem) {
-    Swal.fire({ 
-      icon: icon as SweetAlertIcon, 
-      title: message, 
+    Swal.fire({
+      icon: icon as SweetAlertIcon,
+      title: message,
       text: text,
       allowEnterKey: false,
       allowEscapeKey: false,

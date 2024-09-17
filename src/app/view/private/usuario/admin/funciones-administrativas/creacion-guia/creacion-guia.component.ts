@@ -239,7 +239,6 @@ export class CreacionGuiaComponent {
 
   editarArchivo() {
     if (this.formGuia.valid) {
-
       Swal.fire({
         icon: "warning",
         title: "¿Desea editar la guía?",

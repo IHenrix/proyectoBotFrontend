@@ -48,7 +48,7 @@ export class LoginComponent {
       (response) => {
         this._authService.saveToken(response.access_token);
         this._authService.saveUser(response.access_token);
-        this.router.navigate(["/usuario"]);
+        this.router.navigate([this._authService.obtenerRol()==="ROLE_USER"?"/usuario":"/usuario/admin/funciones"]);
         this.spinner.hide();
       },
       (err) => {

@@ -70,7 +70,7 @@ export class AdminService {
         params = params.append('idArchivo', idArchivo);
         return this.http.get<any>(this.baseEndpoint + '/obtenerDocumento', { params: params })
     }
-    
+
     listaCarrera(): Observable<any> {
         return this.http.get<any>(this.baseEndpoint + '/listaCarrera')
     }

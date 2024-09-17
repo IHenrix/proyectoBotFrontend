@@ -1,5 +1,5 @@
 <nav ngbNav #nav="ngbNav" class="nav-tabs responsive-tabs" [destroyOnHide]="false">
-  <ng-container *ngIf="verPermisos()=='ROLE_ADMIN'" ngbNavItem>
+  <ng-container ngbNavItem>
     <a class="sub-menu-item" ngbNavLink>Crear Usuario</a>
     <ng-template ngbNavContent>
       <app-creacion-usuario></app-creacion-usuario>
