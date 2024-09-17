@@ -112,13 +112,23 @@ export class CreacionGuiaComponent {
     const file = event.target.files[0];
     if (file === undefined || file === null) {
       this.selectedFile = null;
+      this.formGuia.controls.nombre.setValue(null);
     }
     else {
       this.selectedFile = file;
+      this.setearNombreArchivoInput();
     }
     console.log(this.selectedFile)
   }
 
+  setearNombreArchivoInput(){
+    let nombreArchivo= this.selectedFile.name;
+    const lastIndex = nombreArchivo.lastIndexOf('.');
+    if (lastIndex !== -1){
+      nombreArchivo=this.selectedFile.name.substring(0, lastIndex);
+    }
+    this.formGuia.controls.nombre.setValue(nombreArchivo);
+  }
 
   buscar() {
     this.spinner.show();

@@ -29,9 +29,7 @@ export class AdminService {
         return this.http.post<any>(this.baseEndpoint + '/editarUsuario', JSON.stringify(data))
     }
     eliminarUsuario(usuarioId: number): Observable<any> {
-        let params = new HttpParams();
-        params = params.append('usuarioId', usuarioId);
-        return this.http.get<any>(this.baseEndpoint + '/eliminarUsuario', { params: params })
+        return this.http.post<any>(this.baseEndpoint + '/eliminarUsuario/'+usuarioId,null)
     }
 
     listarArchivos(data: any): Observable<any> {

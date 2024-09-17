@@ -9,7 +9,7 @@ import { CodNombre } from 'src/app/interfaces/auth/private/cod-nombre';
 import { AdminService } from 'src/app/service/admin.service';
 import { FormValidationCustomService } from 'src/app/util/form-validation-custom.service';
 
-import { alertNotificacion, languageDataTable } from 'src/app/util/helpers';
+import { alertNotificacion, languageDataTable, limpiarFormcontrol } from 'src/app/util/helpers';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -58,7 +58,7 @@ export class CreacionUsuarioComponent {
     sexo: new FormControl("",[Validators.required]),
     codigo: new FormControl("",[Validators.required]),
     email: new FormControl("",[Validators.required,Validators.email]),
-    telefono: new FormControl("",[Validators.required,this.customvalidator.ValidateTelfCelLenght]),
+    telefono: new FormControl("",[Validators.required,this.customvalidator.ValidateTelfCelLenght,this.customvalidator.ValidateOnlyNumber]),
     idCarrera: new FormControl("",[Validators.required]),
     rol: new FormControl("",[Validators.required])
   });
@@ -110,6 +110,9 @@ export class CreacionUsuarioComponent {
       rowCallback: (row: Node, data: any[] | Object, index: number) => {
         $('.edit_usu', row).off().on('click', () => {
           this.mostrarEdicion(data);
+        });
+        $('.eliminar_usu', row).off().on('click', () => {
+          this.eliminarUsuario(data);
         });
         row.childNodes[0].textContent = String(index + 1);
         return row;
@@ -179,6 +182,14 @@ export class CreacionUsuarioComponent {
       idCarrera:"",
       rol: ""
     });
+    if(tipoAccion===2){
+      limpiarFormcontrol(this.formUsuario.get("password"), []);
+      limpiarFormcontrol(this.formUsuario.get("confirmPassword"), []);
+    }
+    else{
+      limpiarFormcontrol(this.formUsuario.get("password"), [Validators.required]);
+      limpiarFormcontrol(this.formUsuario.get("confirmPassword"), [Validators.required]);
+    }
     this.abrirModal();
   }
   recargarTabla() {
@@ -197,7 +208,8 @@ export class CreacionUsuarioComponent {
     this.formUsuario.get(campo)?.setValue(valorActual.toLowerCase(), { emitEvent: false });
   }
 
-  validarFormulario(){
+
+  crearUsuario(){
     this.formBusValid = true;
     if (this.formUsuario.invalid) {
       return;
@@ -206,10 +218,6 @@ export class CreacionUsuarioComponent {
       alertNotificacion("Las contraseñas deben ser iguales para continuar con la creación del usuario","warning","Por favor validar");
       return;
     }
-  }
-
-  crearUsuario(){
-    this.validarFormulario();
     Swal.fire({
       icon: "warning",
       title: "¿Desea crear el usuario de "+this.fBus.nombre.value+" "+this.fBus.apellidoPaterno.value+" "+this.fBus.apellidoMaterno.value+"?",
@@ -251,8 +259,8 @@ export class CreacionUsuarioComponent {
         this.usuarioModel = resp.model;
         this.formUsuario.setValue({
           usuario:this.usuarioModel.usuario,
-          password: "******",
-          confirmPassword:"******",
+          password: null,
+          confirmPassword:null,
           apellidoPaterno: this.usuarioModel.apellido_paterno,
           apellidoMaterno: this.usuarioModel.apellido_materno,
           nombre: this.usuarioModel.nombre,
@@ -270,9 +278,17 @@ export class CreacionUsuarioComponent {
       this.spinner.hide();
     });
   }
-
   editarArchivo() {
-    this.validarFormulario();
+    this.formBusValid = true;
+    if (this.formUsuario.invalid) {
+      return;
+    }
+    if(this.fBus.password.value!==null || this.fBus.confirmPassword.value!==null){
+      if(this.fBus.password.value!==this.fBus.confirmPassword.value){
+        alertNotificacion("Las contraseñas deben ser iguales para continuar con la creación del usuario","warning","Por favor validar");
+        return;
+      }
+    }
     Swal.fire({
       icon: "warning",
       title: "¿Desea editar al usuario de "+this.fBus.nombre.value+" "+this.fBus.apellidoPaterno.value+" "+this.fBus.apellidoMaterno.value+"?",
@@ -295,9 +311,6 @@ export class CreacionUsuarioComponent {
         (formValues as any).id = this.usuarioModel.id;
         delete formValues.confirmPassword;
         delete formValues.rol;
-        if(formValues.password==="******"){
-          formValues.password=null; //en caso que el usuario no modifique nada
-        }
         this.spinner.show();
         this.adminService.editarUsuario(formValues).subscribe(resp => {
           if (resp.cod === 1) {
@@ -310,6 +323,30 @@ export class CreacionUsuarioComponent {
       }
     });
 
+  }
+
+  eliminarUsuario(data: any) {
+    Swal.fire({
+      icon: "warning",
+      title: "¿Desea eliminar al usuario " + data.nombre +" "+data.apellido_paterno+" "+data.apellido_materno+"?",
+      text: "Esta acción es permanente",
+      confirmButtonText: '<span style="padding: 0 12px;">Sí, eliminar</span>',
+      showCancelButton: true,
+      cancelButtonText: 'No, cancelar',
+      cancelButtonColor: '#EB3219',
+      allowEnterKey: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.spinner.show();
+        this.adminService.eliminarUsuario(data.usuario_id).subscribe(resp => {
+          alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
+          this.buscar();
+          this.spinner.hide();
+        });
+      }
+    });
   }
 
 }

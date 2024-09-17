@@ -59,6 +59,12 @@ export function contarRepetidos(cadenaCompleta: string, palabraPorContar: string
   return contar;
 }
 
+export function limpiarFormcontrol(control:any, array_validator:any) {
+    control.clearValidators();
+    control.setValidators(array_validator);
+    control.updateValueAndValidity();
+}
+
 export function alertNotificacion(message: string,icon: string = "error", text: string = environment.nameSystem) {
     Swal.fire({
       icon: icon as SweetAlertIcon,

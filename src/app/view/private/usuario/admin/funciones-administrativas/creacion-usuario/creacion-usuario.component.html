@@ -77,7 +77,8 @@
             <div class="row">
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Nombre</label>
-                <input (input)="convertirEnMayusculas('nombre')" formControlName="nombre" maxlength="250" type="text" class="form-control-sunarp">
+                <input (input)="convertirEnMayusculas('nombre')" formControlName="nombre" maxlength="250" type="text"
+                  class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.nombre.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
@@ -95,13 +96,15 @@
             <div class="row">
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Paterno</label>
-                <input (input)="convertirEnMayusculas('apellidoPaterno')" formControlName="apellidoPaterno" maxlength="250" type="text" class="form-control-sunarp">
+                <input (input)="convertirEnMayusculas('apellidoPaterno')" formControlName="apellidoPaterno"
+                  maxlength="250" type="text" class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.apellidoPaterno.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Materno</label>
-                <input (input)="convertirEnMayusculas('apellidoMaterno')" formControlName="apellidoMaterno" maxlength="250" type="text" class="form-control-sunarp">
+                <input (input)="convertirEnMayusculas('apellidoMaterno')" formControlName="apellidoMaterno"
+                  maxlength="250" type="text" class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.apellidoMaterno.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
@@ -109,13 +112,15 @@
             <div class="row">
               <div class="col-lg-4 col-md-12 mt-2">
                 <label class="label-sunarp">Codigo Alumno</label>
-                <input (input)="convertirEnMayusculas('codigo')" formControlName="codigo" maxlength="250" type="text" class="form-control-sunarp">
+                <input (input)="convertirEnMayusculas('codigo')" formControlName="codigo" maxlength="250" type="text"
+                  class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.codigo.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
               <div class="col-lg-8 col-md-12 mt-2">
                 <label class="label-sunarp">Correo Electrónico</label>
-                <input (input)="convertirEnMinusculas('email')" formControlName="email" maxlength="250" type="text" class="form-control-sunarp">
+                <input (input)="convertirEnMinusculas('email')" formControlName="email" maxlength="250" type="text"
+                  class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.email.errors?.required" class="invalid-feedback-sunarp p-0 mt-2">Este
                   campo es requerido</small>
                 <small *ngIf="formBusValid && fBus.email.errors?.email" class="invalid-feedback-sunarp p-0 mt-2">El
@@ -128,7 +133,9 @@
                 <input formControlName="telefono" maxlength="250" type="text" class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.telefono.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
-                <small *ngIf="formBusValid && fBus.telefono.errors?.telfcel_invalid"
+                <small *ngIf="formBusValid && fBus.telefono.errors?.onlynumber_invalid"
+                  class="invalid-feedback-sunarp p-0 mt-2">Este campo solo debe contener dígitos</small>
+                <small *ngIf="formBusValid && fBus.telefono.errors?.telfcel_invalid && fBus.telefono.errors?.onlynumber_invalid==null"
                   class="invalid-feedback-sunarp p-0 mt-2">El Teléfono solo debe tener entre 7 y 9 dígitos</small>
               </div>
               <div class="col-lg-8 dscol-md-12 mt-2">
@@ -146,7 +153,8 @@
             <div class="row">
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Usuario</label>
-                <input formControlName="usuario" maxlength="250" type="text" class="form-control-sunarp">
+                <input (input)="convertirEnMayusculas('usuario')" formControlName="usuario" maxlength="250" type="text"
+                  class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.usuario.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
@@ -154,13 +162,15 @@
             <div class="row">
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Contraseña</label>
-                <input formControlName="password" maxlength="16" type="password" class="form-control-sunarp">
+                <input placeholder="********" formControlName="password" maxlength="16" type="password"
+                  class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.password.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Confirme Contraseña</label>
-                <input formControlName="confirmPassword" maxlength="16" type="password" class="form-control-sunarp">
+                <input placeholder="********" formControlName="confirmPassword" maxlength="16" type="password"
+                  class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.confirmPassword.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
@@ -174,7 +184,8 @@
                   <mat-radio-button value="2">Administrador/Docente
                   </mat-radio-button>
                 </mat-radio-group>
-                <br><small *ngIf="formBusValid && fBus.rol.errors?.required" class="invalid-feedback-sunarp p-0 mt-2">El Perfil es requerido</small>
+                <br><small *ngIf="formBusValid && fBus.rol.errors?.required" class="invalid-feedback-sunarp p-0 mt-2">El
+                  Perfil es requerido</small>
 
               </div>
             </div>
@@ -187,7 +198,7 @@
       <button *ngIf="tipoAccion==1" (click)="crearUsuario()" type="button" class="btn-sunarp-green"><i
           class="fa fa-plus icon-sunarp mr-2"></i>Crear Usuario</button>
       <button *ngIf="tipoAccion==2" (click)="editarArchivo()" type="button" class="btn-sunarp-cyan"><i
-            class="fa fa-plus icon-sunarp mr-2"></i>Modificar Usuario</button>
+          class="fa fa-plus icon-sunarp mr-2"></i>Modificar Usuario</button>
       <button (click)="modal_ver_usuario_va.close();" type="button" class="btn-sunarp-red"><i
           class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
     </div>
