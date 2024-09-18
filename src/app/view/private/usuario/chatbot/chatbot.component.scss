@@ -1,3 +1,5 @@
+@import "src/assets/sass/general.scss";
+
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -9,6 +11,12 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   border: none;
   height: calc(100vh - 220px);
+}
+
+.title-typ-devo {
+  font-size: $font-size-ultra;
+  font-family: $ff-gotham-black-regular;
+  color: $sunarp-gray-dark;
 }
 
 .messages-container {
@@ -67,8 +75,8 @@ input {
 }
 input:disabled {
   background-color: #f0f0f0;
-  border: 2px solid #cccccc; 
-  color: #999999; 
+  border: 2px solid #cccccc;
+  color: #999999;
   cursor: not-allowed;
 }
 button {
@@ -81,7 +89,7 @@ button {
   cursor: pointer;
 }
 button:disabled {
-  cursor: not-allowed; 
+  cursor: not-allowed;
   opacity: 0.6;
 }
 .attach-btn {
@@ -175,6 +183,21 @@ button:disabled {
 }
 .attach-btn.animate {
   animation: shake 0.5s ease-in-out infinite;
+}
+
+.table-soli-devo {
+  border-radius: .8em;
+  overflow: hidden;
+  thead {
+    background-color: #4b626c;
+    color: $sunarp-white;
+
+    th {
+      font-family: $ff-avenirLTStd-black;
+      height: 20px;
+      vertical-align: middle !important;
+    }
+  }
 }
 @keyframes shake {
   0% { transform: translateX(0); }

@@ -41,8 +41,8 @@
       </button>
     </div>
     <div class="modal-body pl-5 pb-4 pr-5 pt-4">
-      <h2 class="title-typ-devo text-center" style="font-size: 35px;"> <span
-          class="text-sunarp-green"> RESULTADO DE BUSQUEDA DE GUIAS</span>
+      <h2 class="title-typ-devo text-center mb-3" style="font-size: 35px;"> <span
+          class="text-sunarp-green">RESULTADO DE BUSQUEDA DE <span class="text-sunarp-cyan">GUÍAS</span></span>
       </h2>
       <div class="mt-2">
         <div class="table-responsive">
@@ -63,18 +63,18 @@
                 <td class="text-center">{{ archivo.descripcion }}</td>
                 <td class="text-center">{{ archivo.tipo }}</td>
                 <td class="text-center">
-                  <button (click)="verDocumento(archivo.id)" class="btn-sunarp-green">Ver</button>
-                  <button  class="btn-sunarp-cyan">Descargar</button>
+                  <button (click)="verDocumento(archivo.id)" class="btn-sunarp-green"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button>
+                  <button (click)="downloadPDF(archivo.id,archivo.nombre_archivo)" class="btn-sunarp-cyan"><i class="fa fa-download" aria-hidden="true"></i> Descargar</button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
- 
+
     </div>
     <div class="modal-footer d-flex justify-content-center">
-      
+
     </div>
   </div>
 </ng-template>
@@ -84,7 +84,7 @@
     <div class="modal-header bg-sunarp-gray-dark">
       <h3 class="modal-title h3-sunarp text-white">VISOR DE GUÍA</h3>
       <button tabindex="-1" type="button" class="close" aria-label="Close"
-        style="overflow:hidden; position: absolute; right: 30px; top: 11px;background-color: transparent;border: 0px;" (click)="modal_ver_documento_va.close();">
+        style="overflow:hidden; position: absolute; right: 30px; top: 1px;background-color: transparent;border: 0px;" (click)="modal_ver_documento_va.close();">
         <span style="font-size:35px !important;" class="text-white">&times;</span>
       </button>
     </div>

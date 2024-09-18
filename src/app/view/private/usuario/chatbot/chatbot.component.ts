@@ -93,7 +93,7 @@ export class ChatbotComponent implements AfterViewChecked {
             this.loading = false;
             this.loadingAction=false;
             this.userInputControl.enable();
-            
+
             this.showBotResponseGradually(response.model);
           },
           error => {
@@ -103,7 +103,7 @@ export class ChatbotComponent implements AfterViewChecked {
             console.error('Error al obtener la respuesta del bot', error);
           }
         );
-  
+
       }
 
 
@@ -133,7 +133,7 @@ export class ChatbotComponent implements AfterViewChecked {
           clearInterval(typingInterval);
           this.messages.push({ sender: 'bot', text: this.currentBotMessage });
           this.currentBotMessage = '';
-          resolve(); 
+          resolve();
         }
       }, 10);
     });
@@ -216,6 +216,24 @@ export class ChatbotComponent implements AfterViewChecked {
   }
   pdfLoaded() {
     this.spinner.hide();
+  }
+
+  downloadPDF(id:any,filename:string): void {
+    this.spinner.show();
+    this.adminService.obtenerDocumento(id).subscribe(resp => {
+      if (resp.cod === 1) {
+        const linkSource = `data:application/pdf;base64,${String(resp.model)}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = filename;
+        downloadLink.click();
+      }
+      else {
+        alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
+      }
+      this.spinner.hide();
+    });
+
   }
 
 }
