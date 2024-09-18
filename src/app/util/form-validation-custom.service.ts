@@ -34,6 +34,16 @@ export class FormValidationCustomService {
     }
     return null;
   }
+  validateCodeAlumno(control: AbstractControl): { [key: string]: any } | null {
+    let data = control.value as string;
+    if (data != null || data != undefined) {
+      if (data.length != 10) {
+        return { 'code_invalid_alumno': true };
+      }
+    }
+    return null;
+  }
+
   ValidateCarneExtranj(control: AbstractControl): { [key: string]: any } | null {
     if (control.value.length > 0) {
       if (!((control.value.length >= 8) && (control.value.length <= 12))) {
@@ -67,6 +77,8 @@ export class FormValidationCustomService {
     }
     return null;
   }
+
+  
   ValidateOnlyNumber(control: AbstractControl): { [key: string]: any } | null {
     let data = control.value as string;
     if (data != null || data != undefined) {

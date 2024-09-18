@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatRadioChange } from '@angular/material/radio';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { DataTableDirective } from 'angular-datatables';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
@@ -52,11 +53,11 @@ export class CreacionUsuarioComponent {
     usuario: new FormControl("",[Validators.required,this.customvalidator.ValidateLibElecLenght,this.customvalidator.ValidateOnlyNumber]),
     password: new FormControl("",[Validators.required]),
     confirmPassword: new FormControl("",[Validators.required]),
-    apellidoPaterno: new FormControl("",[Validators.required]),
-    apellidoMaterno: new FormControl("",[Validators.required]),
-    nombre: new FormControl("",[Validators.required]),
+    apellidoPaterno: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyLetter]),
+    apellidoMaterno: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyLetter]),
+    nombre: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyLetter]),
     sexo: new FormControl("",[Validators.required]),
-    codigo: new FormControl("",[Validators.required]),
+    codigo: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyNumber,this.customvalidator.validateCodeAlumno]),
     email: new FormControl("",[Validators.required,Validators.email]),
     telefono: new FormControl("",[Validators.required,this.customvalidator.ValidateTelfCelLenght,this.customvalidator.ValidateOnlyNumber]),
     idCarrera: new FormControl("",[Validators.required]),
@@ -180,8 +181,9 @@ export class CreacionUsuarioComponent {
       email: "",
       telefono:"",
       idCarrera:"",
-      rol: ""
+      rol: "1"
     });
+    
     if(tipoAccion===2){
       limpiarFormcontrol(this.formUsuario.get("password"), []);
       limpiarFormcontrol(this.formUsuario.get("confirmPassword"), []);
@@ -189,6 +191,7 @@ export class CreacionUsuarioComponent {
     else{
       limpiarFormcontrol(this.formUsuario.get("password"), [Validators.required]);
       limpiarFormcontrol(this.formUsuario.get("confirmPassword"), [Validators.required]);
+      limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required,this.customvalidator.ValidateOnlyNumber,this.customvalidator.validateCodeAlumno]);
     }
     this.abrirModal();
   }
@@ -271,6 +274,12 @@ export class CreacionUsuarioComponent {
           idCarrera:this.usuarioModel.id_Carrera,
           rol: String(this.usuarioModel.roles[0].id)
         });
+        if( this.usuarioModel.roles[0].id==1){
+          limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required]);
+        }
+        else{
+          limpiarFormcontrol(this.formUsuario.get("codigo"), []);
+        }
       }
       else {
         alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
@@ -349,4 +358,13 @@ export class CreacionUsuarioComponent {
     });
   }
 
+  cambioPerfil(event: MatRadioChange) {
+    this.fBus.codigo.setValue("");
+    if( event.value==1){
+      limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required,this.customvalidator.ValidateOnlyNumber,this.customvalidator.validateCodeAlumno]);
+    }
+    else{
+      limpiarFormcontrol(this.formUsuario.get("codigo"), []);
+    }
+  }
 }

@@ -29,7 +29,7 @@ export class AdminService {
         return this.http.post<any>(this.baseEndpoint + '/editarUsuario', JSON.stringify(data))
     }
     eliminarUsuario(usuarioId: number): Observable<any> {
-        return this.http.post<any>(this.baseEndpoint + '/eliminarUsuario/'+usuarioId,null)
+        return this.http.post<any>(this.baseEndpoint + '/eliminarUsuario/' + usuarioId, null)
     }
 
     listarArchivos(data: any): Observable<any> {
@@ -46,9 +46,9 @@ export class AdminService {
         formData.append('descripcion', data.descripcion);
         formData.append('idTipoArchivo', data.idTipoArchivo);
         formData.append('archivo', file);  // El archivo como parte del FormData
-            return this.http.post<any>(`${this.baseEndpoint}/crearArchivo`, formData);
-      }
-      editarArchivo(data: any, file: File): Observable<any> {
+        return this.http.post<any>(`${this.baseEndpoint}/crearArchivo`, formData);
+    }
+    editarArchivo(data: any, file: File): Observable<any> {
         const formData: FormData = new FormData();
         formData.append('id', data.id);
         formData.append('nombre', data.nombre);
@@ -56,7 +56,7 @@ export class AdminService {
         formData.append('idTipoArchivo', data.idTipoArchivo);
         formData.append('archivo', file);
         return this.http.post<any>(`${this.baseEndpoint}/editarArchivo`, formData);
-      }
+    }
     eliminarArchivo(idArchivo: number): Observable<any> {
         let params = new HttpParams();
         params = params.append('idArchivo', idArchivo);

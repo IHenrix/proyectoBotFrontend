@@ -19,4 +19,12 @@ export class ChatBotService {
    buscarGuias(data: any): Observable<any> {
     return this.http.post<any>(this.baseEndpoint + '/buscarGuias', JSON.stringify(data))
    }
+
+   enviarMensajeConArchivo(mensaje: string,prompt:string, file: File): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('mensaje', mensaje);
+    formData.append('prompt', prompt);
+    formData.append('archivo', file);
+    return this.http.post<any>(`${this.baseEndpoint}/enviarMensajeConArchivo`, formData);
+}
 }

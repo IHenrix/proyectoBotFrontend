@@ -87,6 +87,10 @@ button {
   background-color: #EB3219;
   color: #ffffff;
   cursor: pointer;
+  &.btn-volver {
+    background-color: $sunarp-cyan;
+    color: #ffffff;
+  }
 }
 button:disabled {
   cursor: not-allowed;

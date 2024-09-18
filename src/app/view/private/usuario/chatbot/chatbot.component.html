@@ -1,14 +1,8 @@
 <div class="chat-container">
   <div class="messages-container" #messagesContainer>
-    <div class="bot-message">
-      <p>Hola, soy EPICSBot, tu asistente virtual académico. Mi rol es ayudarte en la formulación de tu proyecto brindándote asesoría. Recuerda que mi objetivo no es que copies o que yo te genere respuestas automáticas que puedas copiar y pegar, sino ayudarte a agilizar la búsqueda de información, darte retroalimentación y guiarte en el proceso de investigación. Elige una opción para empezar:</p>
-      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(1)">Retroalimentación de Documentos</button>
-      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(2)">Consulta sobre mi Proyecto</button>
-      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(3)">Guías Académicas</button>
-      <button class="option-btn" [disabled]="loadingAction" (click)="seleccionarOpcion(4)">Consulta de Recursos Bibliográficos</button>
-    </div>
     <div *ngFor="let message of messages" class="message">
-      <div #htmlMensajes [innerHTML]="sanitizer.bypassSecurityTrustHtml(message.text)" [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
+      <div #htmlMensajes [innerHTML]="sanitizer.bypassSecurityTrustHtml(message.text)"
+        [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
       </div>
     </div>
     <div *ngIf="loading" class="bot-message loading">
@@ -16,15 +10,18 @@
         <span></span><span></span><span></span>
       </div>
     </div>
-    <div [innerHTML]="sanitizer.bypassSecurityTrustHtml(currentBotMessage)" *ngIf="currentBotMessage" class="bot-message"></div>
+    <div [innerHTML]="sanitizer.bypassSecurityTrustHtml(currentBotMessage)" *ngIf="currentBotMessage"
+      class="bot-message"></div>
   </div>
   <div class="input-container">
-    <button [ngClass]="{'animate': (accionGlobal===1) && !loadingAction}"  [disabled]="loadingAction" (click)="adjuntarArchivo()" class="attach-btn" title="Adjuntar archivos">
+    <button [ngClass]="{'animate': (accionGlobal===2) && !loadingAction}" [disabled]="accionGlobal!=2 || loadingAction"
+      (click)="adjuntarArchivo()" class="attach-btn" title="Adjuntar archivos">
       <i class="fas fa-paperclip"></i>
     </button>
-    <input type="file" #fileInput (change)="archivoSeleccionado($event)" style="display: none;">
-    <input [formControl]="userInputControl" (keyup.enter)="enviarMensaje()" placeholder="Escribe tu mensaje..." />
-    <button [disabled]="loadingAction" (click)="enviarMensaje()">Enviar</button>
+    <input accept="application/pdf" type="file" #fileInput (change)="archivoSeleccionado($event)" style="display: none;">
+    <input [attr.readonly]="accionGlobal === 2 ? true : null" [formControl]="userInputControl" (keyup.enter)="enviarMensaje()" placeholder="Escribe tu mensaje..." />
+    <button type="button" [disabled]="loadingAction || accionGlobal==0" (click)="enviarMensaje()">Enviar</button>
+    <button type="button" class="btn-volver" (click)="reiniciarMenu()" [disabled]="accionGlobal==0 || loadingAction">Regresar al Menu</button>
   </div>
 </div>
 
@@ -35,18 +32,18 @@
     <div class="modal-header bg-sunarp-gray-dark">
       <h3 class="modal-title h3-sunarp text-white">EPICSBOT</h3>
       <button tabindex="-1" type="button" class="close" aria-label="Close"
-        style="overflow:hidden; position: absolute; right: 30px; top: 3px;background-color: transparent;border: 0px;"
+        style="overflow:hidden; position: absolute; right: 30px; top: -3px;background-color: transparent;border: 0px;"
         (click)="modal_lista_guias_va.close();">
         <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
       </button>
     </div>
     <div class="modal-body pl-5 pb-4 pr-5 pt-4">
-      <h2 class="title-typ-devo text-center mb-3" style="font-size: 35px;"> <span
-          class="text-sunarp-green">RESULTADO DE BUSQUEDA DE <span class="text-sunarp-cyan">GUÍAS</span></span>
+      <h2 class="title-typ-devo text-center mb-3" style="font-size: 35px;"> <span class="text-sunarp-green">RESULTADO DE
+          BUSQUEDA DE <span class="text-sunarp-cyan">GUÍAS</span></span>
       </h2>
       <div class="mt-2">
         <div class="table-responsive">
-          <table  class="table table-soli-devo">
+          <table class="table table-soli-devo">
             <thead>
               <tr>
                 <th style="width: 30px" class="text-center">N°</th>
@@ -63,8 +60,10 @@
                 <td class="text-center">{{ archivo.descripcion }}</td>
                 <td class="text-center">{{ archivo.tipo }}</td>
                 <td class="text-center">
-                  <button (click)="verDocumento(archivo.id)" class="btn-sunarp-green"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button>
-                  <button (click)="downloadPDF(archivo.id,archivo.nombre_archivo)" class="btn-sunarp-cyan"><i class="fa fa-download" aria-hidden="true"></i> Descargar</button>
+                  <button (click)="verDocumento(archivo.id)" class="btn-sunarp-green"><i class="fa fa-eye"
+                      aria-hidden="true"></i> Ver</button>
+                  <button (click)="downloadPDF(archivo.id,archivo.nombre_archivo)" class="btn-sunarp-cyan"><i
+                      class="fa fa-download" aria-hidden="true"></i> Descargar</button>
                 </td>
               </tr>
             </tbody>
@@ -84,21 +83,15 @@
     <div class="modal-header bg-sunarp-gray-dark">
       <h3 class="modal-title h3-sunarp text-white">VISOR DE GUÍA</h3>
       <button tabindex="-1" type="button" class="close" aria-label="Close"
-        style="overflow:hidden; position: absolute; right: 30px; top: 1px;background-color: transparent;border: 0px;" (click)="modal_ver_documento_va.close();">
+        style="overflow:hidden; position: absolute; right: 30px; top: -3px;background-color: transparent;border: 0px;"
+        (click)="modal_ver_documento_va.close();">
         <span style="font-size:35px !important;" class="text-white">&times;</span>
       </button>
     </div>
     <div class="modal-body pl-5 pb-4 pr-5 pt-4">
-      <ngx-extended-pdf-viewer
-      [base64Src]="contenidoArchivoVisor"
-      [showToolbar]="false"
-      [showPresentationModeButton]="true"
-      [showDownloadButton]="true"
-      [showSecondaryToolbarButton]="false"
-      [showOpenFileButton]="false"
-      (pdfLoaded)="pdfLoaded()"
-      class="pdf-viewer-custom"
-      >
+      <ngx-extended-pdf-viewer [base64Src]="contenidoArchivoVisor" [showToolbar]="false"
+        [showPresentationModeButton]="true" [showDownloadButton]="true" [showSecondaryToolbarButton]="false"
+        [showOpenFileButton]="false" (pdfLoaded)="pdfLoaded()" class="pdf-viewer-custom">
       </ngx-extended-pdf-viewer>
     </div>
     <div class="modal-footer d-flex justify-content-center">

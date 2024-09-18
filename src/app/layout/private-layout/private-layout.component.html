@@ -32,10 +32,10 @@
             <img *ngSwitchCase="'F'" src="assets/img/sistema/mujer.jpg" class="img-radius" alt="sunarp">
             <img *ngSwitchDefault src="assets/img/sistema/hombre.jpg" class="img-radius" alt="sunarp">
           </div>
-          <div class="mt-2">
+          <div *ngIf="usuario?.codigo" class="mt-2">
             <h5 class="text-white mt-2 h5-sunarp">CÓDIGO : {{usuario?.codigo}}</h5>
           </div>
-          <h6 class="text-email-principal mt-3 mb-2">CARRERA : {{usuario?.carrera}}</h6>
+          <h6 class="text-email-principal mt-3 mb-2">Escuela Profesional de {{usuario?.carrera}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Teléfomo / Celular : {{usuario?.telefono}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Correo Electrónico : {{usuario?.email}}</h6>
 
