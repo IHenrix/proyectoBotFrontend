@@ -1,1 +1,1 @@
-ng build --base-href /votaciones/ -c production
+ng build --base-href /epicsbot/ -c production

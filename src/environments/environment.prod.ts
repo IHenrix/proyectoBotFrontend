@@ -1,5 +1,5 @@
 export const environment = {
-  appName: 'MODULO_VOTACIONES',
+  appName: 'EPICSBOT',
   isTest: false,
   nameSystem: 'EPICSBot',
   authAngular:{
@@ -7,7 +7,7 @@ export const environment = {
     password:'Gracia1234'
   },
   urlApiMicroservices: {
-    domain: 'http://172.20.190.123/api-votaciones',
+    domain: 'http://172.20.190.123/apiepicsbot',
   },
   apiConnectId: '',
   urlApiIp: 'https://api.ipify.org/?format=json',

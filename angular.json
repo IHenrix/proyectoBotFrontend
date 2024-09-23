@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "modulo_votaciones": {
+    "moduloepicsbot": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -21,7 +21,7 @@
               "sweetalert2",
               "moment"
             ],
-            "outputPath": "dist/modulo_votaciones",
+            "outputPath": "dist/moduloepicsbot",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -98,10 +98,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "modulo_votaciones:build:production"
+              "browserTarget": "moduloepicsbot:build:production"
             },
             "development": {
-              "browserTarget": "modulo_votaciones:build:development"
+              "browserTarget": "moduloepicsbot:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -109,7 +109,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "modulo_votaciones:build"
+            "browserTarget": "moduloepicsbot:build"
           }
         },
         "test": {
