@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatRadioChange } from '@angular/material/radio';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -9,8 +9,8 @@ import { Subject } from 'rxjs';
 import { CodNombre } from 'src/app/interfaces/auth/private/cod-nombre';
 import { AdminService } from 'src/app/service/admin.service';
 import { FormValidationCustomService } from 'src/app/util/form-validation-custom.service';
-
-import { alertNotificacion, languageDataTable, limpiarFormcontrol } from 'src/app/util/helpers';
+import * as XLSX from 'xlsx';
+import { alertNotificacion, contarRepetidos, languageDataTable, limpiarFormcontrol, obtenerStringSimple, validStringNull } from 'src/app/util/helpers';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,13 +23,19 @@ export class CreacionUsuarioComponent {
   @ViewChild('modal_ver_usuario') modal_ver_usuario: NgbModalRef;
   modal_ver_usuario_va: any;
 
-  listaUsuario :any = [];
+  @ViewChild('modal_accion_masiva') modal_accion_masiva: NgbModalRef;
+  modal_accion_masiva_va: any;
+
+  archivoAccionMasiva: any = null;
+
+
+  listaUsuario: any = [];
   constructor(
     private modalservice: NgbModal,
     private ref: ChangeDetectorRef,
-    private adminService:AdminService,
+    private adminService: AdminService,
     private spinner: NgxSpinnerService,
-    private customvalidator: FormValidationCustomService,
+    private customvalidator: FormValidationCustomService
 
   ) { }
   @ViewChildren(DataTableDirective) private dtElements;
@@ -50,23 +56,23 @@ export class CreacionUsuarioComponent {
   listaCarrera: CodNombre<string>[] = [];
 
   formUsuario = new FormGroup({
-    usuario: new FormControl("",[Validators.required,this.customvalidator.ValidateLibElecLenght,this.customvalidator.ValidateOnlyNumber]),
-    password: new FormControl("",[Validators.required]),
-    confirmPassword: new FormControl("",[Validators.required]),
-    apellidoPaterno: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyLetter]),
-    apellidoMaterno: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyLetter]),
-    nombre: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyLetter]),
-    sexo: new FormControl("",[Validators.required]),
-    codigo: new FormControl("",[Validators.required,this.customvalidator.ValidateOnlyNumber,this.customvalidator.validateCodeAlumno]),
-    email: new FormControl("",[Validators.required,Validators.email]),
-    telefono: new FormControl("",[Validators.required,this.customvalidator.ValidateTelfCelLenght,this.customvalidator.ValidateOnlyNumber]),
-    idCarrera: new FormControl("",[Validators.required]),
-    rol: new FormControl("",[Validators.required])
+    usuario: new FormControl("", [Validators.required, this.customvalidator.validateEmailUSMP]),
+    password: new FormControl("", [Validators.required]),
+    confirmPassword: new FormControl("", [Validators.required]),
+    apellidoPaterno: new FormControl("", [Validators.required, this.customvalidator.ValidateOnlyLetter]),
+    apellidoMaterno: new FormControl("", [Validators.required, this.customvalidator.ValidateOnlyLetter]),
+    nombre: new FormControl("", [Validators.required, this.customvalidator.ValidateOnlyLetter]),
+    sexo: new FormControl("", [Validators.required]),
+    codigo: new FormControl("", [Validators.required, this.customvalidator.ValidateOnlyNumber, this.customvalidator.validateCodeAlumno]),
+    email: new FormControl("",/*[Validators.required,Validators.email]*/),
+    telefono: new FormControl("", [Validators.required, this.customvalidator.ValidateTelfCelLenght, this.customvalidator.ValidateOnlyNumber]),
+    idCarrera: new FormControl("", [Validators.required]),
+    rol: new FormControl("", [Validators.required])
   });
   get fBus() {
     return this.formUsuario.controls;
   }
-  formBusValid:Boolean = false;
+  formBusValid: Boolean = false;
 
   modalOpciones: NgbModalOptions = {
     centered: true,
@@ -76,66 +82,73 @@ export class CreacionUsuarioComponent {
   }
 
   datatable_dtTrigger_usuario: Subject<ADTSettings> = new Subject<ADTSettings>();
-  tipoAccion:number;
-  usuarioModel:any=null;
+  tipoAccion: number;
+  usuarioModel: any = null;
 
   ngOnInit(): void {
     setTimeout(() => {
-    this.datatable_usuario = {
-      dom: '<"top"if>rt<"bottom">p<"clear">',
-      paging: true,
-      pagingType: 'full_numbers',
-      pageLength: 10,
-      responsive: true,
-      language: languageDataTable("Usuarios"),
-      columns: [
-        { data: 'usuario' },
-        { data: 'usuario' },
-        { data: 'nombre' },
-        { data: 'apellido_paterno' },
-        { data: 'apellido_materno' },
-        { data: 'codigo' },
-        { data: 'email' },
-        { data: 'telefono' },
-        { data: 'carrera' },
-        {
-          data: 'usuario', render: (data: any, type: any, full: any) => {
-            return '<div class="btn-group"><button type="button" style ="margin-right:5px;" class="btn-sunarp-cyan edit_usu mr-3"><i class="fa fa-pencil" aria-hidden="true"></i></button><button type="button" class="btn-sunarp-red eliminar_usu mr-3"><i class="fa fa-trash" aria-hidden="true"></i></button></div';
-          }
-        },
-      ],
-      columnDefs: [
-        { orderable: false, className: "text-center align-middle", targets: 0, },
-        { className: "text-center align-middle", targets: '_all' }
-      ],
-      rowCallback: (row: Node, data: any[] | Object, index: number) => {
-        $('.edit_usu', row).off().on('click', () => {
-          this.mostrarEdicion(data);
-        });
-        $('.eliminar_usu', row).off().on('click', () => {
-          this.eliminarUsuario(data);
-        });
-        row.childNodes[0].textContent = String(index + 1);
-        return row;
+      this.datatable_usuario = {
+        dom: '<"top"if>rt<"bottom">p<"clear">',
+        paging: true,
+        pagingType: 'full_numbers',
+        pageLength: 10,
+        responsive: true,
+        language: languageDataTable("Usuarios"),
+        columns: [
+          { data: 'usuario' },
+          { data: 'usuario' },
+          { data: 'nombre' },
+          { data: 'apellido_paterno' },
+          { data: 'apellido_materno' },
+          {
+            data: 'codigo', render: (data: any, type: any, full: any) => {
+              if (data == null) {
+                return '<span class="badge-sunarp-gray-light">-</span>'
+              }
+              return data;
+            }
+          },
+          { data: 'telefono' },
+          { data: 'carrera' },
+          {
+            data: 'usuario', render: (data: any, type: any, full: any) => {
+              return '<div class="btn-group"><button type="button" style ="margin-right:5px;" class="btn-sunarp-cyan edit_usu mr-3"><i class="fa fa-pencil" aria-hidden="true"></i></button><button type="button" class="btn-sunarp-red eliminar_usu mr-3"><i class="fa fa-trash" aria-hidden="true"></i></button></div';
+            }
+          },
+        ],
+        columnDefs: [
+          { orderable: false, className: "text-center align-middle", targets: 0, },
+          { className: "text-center align-middle", targets: '_all' }
+        ],
+        rowCallback: (row: Node, data: any[] | Object, index: number) => {
+          $('.edit_usu', row).off().on('click', () => {
+            this.mostrarEdicion(data);
+          });
+          $('.eliminar_usu', row).off().on('click', () => {
+            this.eliminarUsuario(data);
+          });
+          row.childNodes[0].textContent = String(index + 1);
+          return row;
+        }
       }
-    }
     });
-    this.adminService.listaCarrera().subscribe(listaCarrera => this.listaCarrera=listaCarrera);
+    this.adminService.listaCarrera().subscribe(listaCarrera => this.listaCarrera = listaCarrera);
   }
 
 
   ngAfterViewInit() {
     setTimeout(() => {
       this.datatable_dtTrigger_usuario.next(this.datatable_usuario);
-      this.buscar()
+      this.buscar();
     }, 200);
   }
+
 
   ngOnDestroy(): void {
     this.datatable_dtTrigger_usuario.unsubscribe();
   }
 
-  buscar(){
+  buscar() {
     let valores = this.formBusqueda.getRawValue();
     let valoresEnMayusculas = Object.keys(valores).reduce((acc, key) => {
       acc[key] = valores[key] ? valores[key].toString().toUpperCase() : valores[key];
@@ -143,55 +156,55 @@ export class CreacionUsuarioComponent {
     }, {});
     this.spinner.show();
     this.adminService.listarUsuarios(valoresEnMayusculas).subscribe(resp => {
-      this.listaUsuario=[];
-      if(resp.cod===1){
-        this.listaUsuario=resp.list;
+      this.listaUsuario = [];
+      if (resp.cod === 1) {
+        this.listaUsuario = resp.list;
       }
-      else{
-        alertNotificacion(resp.mensaje,resp.icon,resp.mensajeTxt);
+      else {
+        alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
       }
       this.recargarTabla();
       this.spinner.hide();
     });
   }
 
-  limpiar(){
+  limpiar() {
     this.formBusqueda.reset();
     setTimeout(() => {
       this.buscar()
     }, 200);
   }
 
-  abrirModal(){
-    this.modal_ver_usuario_va = this.modalservice.open(this.modal_ver_usuario, { ...this.modalOpciones,size: 'xl' });
+  abrirModal() {
+    this.modal_ver_usuario_va = this.modalservice.open(this.modal_ver_usuario, { ...this.modalOpciones, size: 'xl' });
   }
   accionArchivo(tipoAccion: number) {
     this.tipoAccion = tipoAccion;
-    this.formBusValid=false;
-    this.usuarioModel=null;
+    this.formBusValid = false;
+    this.usuarioModel = null;
     this.formUsuario.setValue({
       usuario: "",
       password: "",
-      confirmPassword:"",
+      confirmPassword: "",
       apellidoPaterno: "",
       apellidoMaterno: "",
       nombre: "",
       sexo: "",
       codigo: "",
       email: "",
-      telefono:"",
-      idCarrera:"",
+      telefono: "",
+      idCarrera: "",
       rol: "1"
     });
-    
-    if(tipoAccion===2){
+
+    if (tipoAccion === 2) {
       limpiarFormcontrol(this.formUsuario.get("password"), []);
       limpiarFormcontrol(this.formUsuario.get("confirmPassword"), []);
     }
-    else{
+    else {
       limpiarFormcontrol(this.formUsuario.get("password"), [Validators.required]);
       limpiarFormcontrol(this.formUsuario.get("confirmPassword"), [Validators.required]);
-      limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required,this.customvalidator.ValidateOnlyNumber,this.customvalidator.validateCodeAlumno]);
+      limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required, this.customvalidator.ValidateOnlyNumber, this.customvalidator.validateCodeAlumno]);
     }
     this.abrirModal();
   }
@@ -212,18 +225,18 @@ export class CreacionUsuarioComponent {
   }
 
 
-  crearUsuario(){
+  crearUsuario() {
     this.formBusValid = true;
     if (this.formUsuario.invalid) {
       return;
     }
-    if(this.fBus.password.value!==this.fBus.confirmPassword.value){
-      alertNotificacion("Las contraseñas deben ser iguales para continuar con la creación del usuario","warning","Por favor validar");
+    if (this.fBus.password.value !== this.fBus.confirmPassword.value) {
+      alertNotificacion("Las contraseñas deben ser iguales para continuar con la creación del usuario", "warning", "Por favor validar");
       return;
     }
     Swal.fire({
       icon: "warning",
-      title: "¿Desea crear el usuario de "+this.fBus.nombre.value+" "+this.fBus.apellidoPaterno.value+" "+this.fBus.apellidoMaterno.value+"?",
+      title: "¿Desea crear el usuario de " + this.fBus.nombre.value + " " + this.fBus.apellidoPaterno.value + " " + this.fBus.apellidoMaterno.value + "?",
       text: "Por favor verificar todos los datos antes de continuar",
       confirmButtonText: '<span style="padding: 0 12px;">Sí, crear</span>',
       showCancelButton: true,
@@ -234,7 +247,7 @@ export class CreacionUsuarioComponent {
       allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        let formValues =this.formUsuario.getRawValue();
+        let formValues = this.formUsuario.getRawValue();
         let perfilArray = [
           { id: Number(this.fBus.rol.value) }
         ];
@@ -261,23 +274,23 @@ export class CreacionUsuarioComponent {
         this.accionArchivo(2);
         this.usuarioModel = resp.model;
         this.formUsuario.setValue({
-          usuario:this.usuarioModel.usuario,
+          usuario: this.usuarioModel.usuario,
           password: null,
-          confirmPassword:null,
+          confirmPassword: null,
           apellidoPaterno: this.usuarioModel.apellido_paterno,
           apellidoMaterno: this.usuarioModel.apellido_materno,
           nombre: this.usuarioModel.nombre,
           sexo: this.usuarioModel.sexo,
-          codigo:this.usuarioModel.codigo,
+          codigo: this.usuarioModel.codigo,
           email: this.usuarioModel.email,
-          telefono:this.usuarioModel.telefono,
-          idCarrera:this.usuarioModel.id_Carrera,
+          telefono: this.usuarioModel.telefono,
+          idCarrera: this.usuarioModel.id_Carrera,
           rol: String(this.usuarioModel.roles[0].id)
         });
-        if( this.usuarioModel.roles[0].id==1){
+        if (this.usuarioModel.roles[0].id == 1) {
           limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required]);
         }
-        else{
+        else {
           limpiarFormcontrol(this.formUsuario.get("codigo"), []);
         }
       }
@@ -292,15 +305,15 @@ export class CreacionUsuarioComponent {
     if (this.formUsuario.invalid) {
       return;
     }
-    if(this.fBus.password.value!==null || this.fBus.confirmPassword.value!==null){
-      if(this.fBus.password.value!==this.fBus.confirmPassword.value){
-        alertNotificacion("Las contraseñas deben ser iguales para continuar con la creación del usuario","warning","Por favor validar");
+    if (this.fBus.password.value !== null || this.fBus.confirmPassword.value !== null) {
+      if (this.fBus.password.value !== this.fBus.confirmPassword.value) {
+        alertNotificacion("Las contraseñas deben ser iguales para continuar con la creación del usuario", "warning", "Por favor validar");
         return;
       }
     }
     Swal.fire({
       icon: "warning",
-      title: "¿Desea editar al usuario de "+this.fBus.nombre.value+" "+this.fBus.apellidoPaterno.value+" "+this.fBus.apellidoMaterno.value+"?",
+      title: "¿Desea editar al usuario de " + this.fBus.nombre.value + " " + this.fBus.apellidoPaterno.value + " " + this.fBus.apellidoMaterno.value + "?",
       text: "Por favor verificar todos los datos antes de continuar",
       confirmButtonText: '<span style="padding: 0 12px;">Sí, editar</span>',
       showCancelButton: true,
@@ -311,7 +324,7 @@ export class CreacionUsuarioComponent {
       allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        let formValues =this.formUsuario.getRawValue();
+        let formValues = this.formUsuario.getRawValue();
         let perfilArray = [
           { id: Number(this.fBus.rol.value) }
         ];
@@ -337,7 +350,7 @@ export class CreacionUsuarioComponent {
   eliminarUsuario(data: any) {
     Swal.fire({
       icon: "warning",
-      title: "¿Desea eliminar al usuario " + data.nombre +" "+data.apellido_paterno+" "+data.apellido_materno+"?",
+      title: "¿Desea eliminar al usuario " + data.nombre + " " + data.apellido_paterno + " " + data.apellido_materno + "?",
       text: "Esta acción es permanente",
       confirmButtonText: '<span style="padding: 0 12px;">Sí, eliminar</span>',
       showCancelButton: true,
@@ -360,11 +373,146 @@ export class CreacionUsuarioComponent {
 
   cambioPerfil(event: MatRadioChange) {
     this.fBus.codigo.setValue("");
-    if( event.value==1){
-      limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required,this.customvalidator.ValidateOnlyNumber,this.customvalidator.validateCodeAlumno]);
+    if (event.value == 1) {
+      limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required, this.customvalidator.ValidateOnlyNumber, this.customvalidator.validateCodeAlumno]);
     }
-    else{
+    else {
       limpiarFormcontrol(this.formUsuario.get("codigo"), []);
     }
+  }
+
+  accionMasivaModal() {
+    this.archivoAccionMasiva = null;
+    this.modal_accion_masiva_va = this.modalservice.open(this.modal_accion_masiva, { ...this.modalOpciones });
+  }
+
+  cambiarArchivoAccionMasiva(event: any): void {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement.files && inputElement.files.length > 0) {
+      this.archivoAccionMasiva = inputElement;
+    }
+    else {
+      this.archivoAccionMasiva = null;
+    }
+  }
+
+
+  cargaMasiva() {
+
+    if (!this.archivoAccionMasiva) {
+      alertNotificacion("Se debe agregar un archivo excel o csv para continuar con el proceso", "warning")
+      return;
+    }
+    const target: DataTransfer = <DataTransfer>(this.archivoAccionMasiva);
+    let validArchivo = !!target.files[0].name.match(/(.xls|.xlsx)/);
+    let indexRow = 2;
+    let validError = 0;
+    if (!validArchivo) {
+      alertNotificacion("Solo esta permitido los archivos xls,xlsx y csv para agregar los pagos no replicados", "info", "Por favor verificar");
+      return;
+    }
+
+
+    const reader: FileReader = new FileReader();
+    reader.onload = (e: any) => {
+      this.spinner.show();
+      const bstr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+      const header = (XLSX.utils.sheet_to_json(ws, { header: 1 })).shift();
+      if (!(header[0] == "USUARIO" && header[1] == "NOMBRES" && header[2] == "PATERNO" && header[3] == "MATERNO" && header[4] == "SEXO" && header[5] == "CODIGO" && header[6] == "TELEFONO" && header[7] == "ESCUELA_PROFESIONAL" && header[8] == "PERFIL")) {
+        alertNotificacion("El Formato del archivo es inválido", "error", "Por favor usar la plantilla correcta para el registro de usuarios")
+        return;
+      }
+      const data = XLSX.utils.sheet_to_json(ws, { raw: false });
+      var p: any;
+      for (p in data) {
+        let usuario: string = obtenerStringSimple(data[p]['USUARIO']);
+        let nombres: string = obtenerStringSimple(data[p]['NOMBRES']);
+        let paterno: string = obtenerStringSimple(data[p]['PATERNO']);
+        let materno: string = obtenerStringSimple(data[p]['MATERNO']);
+        let sexo: string = obtenerStringSimple(data[p]['SEXO']);
+        let codigo: string = obtenerStringSimple(data[p]['CODIGO']);
+        let telefono: string = obtenerStringSimple(data[p]['TELEFONO']);
+        let escuelaProfesional: string = obtenerStringSimple(data[p]['ESCUELA_PROFESIONAL']);
+        let perfil: string = obtenerStringSimple(data[p]['PERFIL']);
+
+        if (!(usuario && nombres && paterno && materno && sexo && telefono && escuelaProfesional && perfil)) {
+          validError = 1;
+          break;
+        }
+
+        if (perfil == 'ALUMNO' && (!codigo)) {
+          validError = 2;
+          break;
+        }
+
+        if ([usuario, nombres, paterno, materno].some(item => item.length >= 250)) {
+          validError = 3;
+          break;
+        }
+        const regexLetras = /^[A-Za-zñÑáéíóúÁÉÍÓÚ ]+$/;
+        if (![nombres, paterno, materno].every(item => regexLetras.test(item))) {
+          validError = 4;
+          break;
+        }
+        const regexCorreo = /^[^\s@]+@usmp\.pe$/;
+        if (regexCorreo.test(usuario) == false || contarRepetidos(usuario, '@') != 1) {
+          validError = 5;
+          break;
+        }
+        if (!(sexo === "M" || sexo === "F")) {
+          validError = 6;
+          break;
+        }
+
+
+
+
+
+
+        indexRow++;
+      }
+      if (validError != 0) {
+        this.error_subir_archivo(validError, indexRow);
+      }
+
+
+
+      this.ref.detectChanges();
+    };
+
+    reader.readAsArrayBuffer(target.files[0]);
+    reader.onloadend = (e) => {
+      this.spinner.hide();
+    }
+
+  }
+
+  error_subir_archivo(error, index) {
+    let textError: string = "";
+    switch (error) {
+      case 1:
+        textError = "La fila " + index + " no tiene los campos completos";
+        break
+      case 2:
+        textError = "El campo CODIGO de la fila " + index + " es necesario debido a que el perfil seleccionado es ALUMNO";
+        break
+      case 3:
+        textError = "Uno o varios de los campos USUARIO,NOMBRES,PATERNO,MATERNO de la fila " + index + " superan el límite de carácteres (250)";
+        break
+      case 4:
+        textError = "Uno o varios de los campos NOMBRES,PATERNO,MATERNO de la fila " + index + " no son alfabeticos";
+        break
+      case 5:
+        textError = "El campo USUARIO de la fila " + index + " no es un correo institucional";
+        break
+      case 6:
+        textError = "El campo SEXO de la fila " + index + " solo puede ser M o F";
+        break
+    }
+    alertNotificacion("Se ha producido un error al intentar cargar los datos:<br>" + textError, "error");
+
   }
 }

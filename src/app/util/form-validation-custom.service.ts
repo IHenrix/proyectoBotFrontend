@@ -107,6 +107,19 @@ export class FormValidationCustomService {
     }
     return null;
   }
+
+  validateEmailUSMP(control: AbstractControl): { [key: string]: any } | null {
+    let data = control.value as string;
+    if (data != null && data !== undefined) {
+      if (data.trim().length > 0) {
+        if (/^[^\s@]+@usmp\.pe$/.test(data.toLowerCase()) === false || contarRepetidos(data, '@') !== 1) {
+          return { 'no_email_usmp': true };
+        }
+      }
+    }
+    return null;
+  }
+
   ValidateCCI(control: AbstractControl): { [key: string]: any } | null {
     if (control.value.length > 0) {
       if (!((control.value.length == 20))) {

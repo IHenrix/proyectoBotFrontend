@@ -29,6 +29,7 @@
     "datatables.net": "^1.11.3",
     "datatables.net-bs5": "^1.11.3",
     "dayjs": "^1.11.10",
+    "file-saver": "^2.0.5",
     "highcharts-angular": "^4.0.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.4",
@@ -37,6 +38,7 @@
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.10.1",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {

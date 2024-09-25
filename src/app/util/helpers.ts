@@ -77,3 +77,10 @@ export function alertNotificacion(message: string,icon: string = "error", text: 
       confirmButtonText: '<span style="padding: 0 15px;">Aceptar</span>'
     });
   }
+
+export const validStringNull = (value: any): boolean => { 
+    return  value !== undefined && value !== null && String(value).trim().length>0
+}
+export const obtenerStringSimple = (valor: any): string | null => { 
+    return validStringNull(valor) ? String(valor) : null;
+  }
