@@ -62,7 +62,7 @@
     <div class="modal-header bg-sunarp-gray-dark">
       <h3 class="modal-title h3-sunarp text-white">EPICSBOT</h3>
       <button tabindex="-1" type="button" class="close" aria-label="Close"
-        style="overflow:hidden; position: absolute; right: 30px; top: 3px;background-color: transparent;border: 0px;"
+        style="overflow:hidden; position: absolute; right: 30px; top: 2px;background-color: transparent;border: 0px;"
         (click)="modal_ver_usuario_va.close();">
         <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
       </button>
@@ -247,7 +247,7 @@
           <div class="row">
             <div class="col-lg-12 col-md-12 mt-2">
               <label class="label-sunarp"></label><br>
-              <input (change)="cambiarArchivoAccionMasiva($event)" accept=".xlsx,.xls" type="file" class="form-control-sunarp">
+              <input [formControl]="archivoAccionMasivaForm" (change)="cambiarArchivoAccionMasiva($event)" accept=".xlsx,.xls" type="file" class="form-control-sunarp">
             </div>
           </div>
         </div>

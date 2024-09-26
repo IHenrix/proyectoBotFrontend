@@ -12,6 +12,9 @@ import { FormValidationCustomService } from 'src/app/util/form-validation-custom
 import * as XLSX from 'xlsx';
 import { alertNotificacion, contarRepetidos, languageDataTable, limpiarFormcontrol, obtenerStringSimple, validStringNull } from 'src/app/util/helpers';
 import Swal from 'sweetalert2';
+import { CreaModiRolRequest } from 'src/app/interfaces/auth/private/creacion-usuario/crea-modi-rol-request';
+import { CreaModiUsuarioRequest } from 'src/app/interfaces/auth/private/creacion-usuario/crea-modi-usu-request';
+import { obtenerPerfilEnum } from 'src/app/util/enum/perfil-enum';
 
 @Component({
   selector: 'app-creacion-usuario',
@@ -26,8 +29,9 @@ export class CreacionUsuarioComponent {
   @ViewChild('modal_accion_masiva') modal_accion_masiva: NgbModalRef;
   modal_accion_masiva_va: any;
 
+  archivoAccionMasivaForm = new FormControl(null);
   archivoAccionMasiva: any = null;
-
+  listaRequestUsuarioMasivo: CreaModiUsuarioRequest[] = [];
 
   listaUsuario: any = [];
   constructor(
@@ -247,13 +251,15 @@ export class CreacionUsuarioComponent {
       allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
+
         let formValues = this.formUsuario.getRawValue();
-        let perfilArray = [
+        let perfilArray: CreaModiRolRequest[] = [
           { id: Number(this.fBus.rol.value) }
         ];
         (formValues as any).roles = perfilArray;
         delete formValues.confirmPassword;
         delete formValues.rol;
+
         this.spinner.show();
         this.adminService.crearUsuario(formValues).subscribe(resp => {
           if (resp.cod === 1) {
@@ -325,7 +331,7 @@ export class CreacionUsuarioComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         let formValues = this.formUsuario.getRawValue();
-        let perfilArray = [
+        let perfilArray: CreaModiRolRequest[] = [
           { id: Number(this.fBus.rol.value) }
         ];
         (formValues as any).roles = perfilArray;
@@ -383,6 +389,7 @@ export class CreacionUsuarioComponent {
 
   accionMasivaModal() {
     this.archivoAccionMasiva = null;
+    this.archivoAccionMasivaForm.setValue(null);
     this.modal_accion_masiva_va = this.modalservice.open(this.modal_accion_masiva, { ...this.modalOpciones });
   }
 
@@ -411,9 +418,8 @@ export class CreacionUsuarioComponent {
       alertNotificacion("Solo esta permitido los archivos xls,xlsx y csv para agregar los pagos no replicados", "info", "Por favor verificar");
       return;
     }
-
-
     const reader: FileReader = new FileReader();
+    this.listaRequestUsuarioMasivo = [];
     reader.onload = (e: any) => {
       this.spinner.show();
       const bstr: string = e.target.result;
@@ -437,79 +443,158 @@ export class CreacionUsuarioComponent {
         let telefono: string = obtenerStringSimple(data[p]['TELEFONO']);
         let escuelaProfesional: string = obtenerStringSimple(data[p]['ESCUELA_PROFESIONAL']);
         let perfil: string = obtenerStringSimple(data[p]['PERFIL']);
+        const regexNumber = /^[0-9]*$/;
 
         if (!(usuario && nombres && paterno && materno && sexo && telefono && escuelaProfesional && perfil)) {
           validError = 1;
           break;
         }
 
-        if (perfil == 'ALUMNO' && (!codigo)) {
-          validError = 2;
-          break;
-        }
-
         if ([usuario, nombres, paterno, materno].some(item => item.length >= 250)) {
-          validError = 3;
+          validError = 2;
           break;
         }
         const regexLetras = /^[A-Za-zñÑáéíóúÁÉÍÓÚ ]+$/;
         if (![nombres, paterno, materno].every(item => regexLetras.test(item))) {
-          validError = 4;
+          validError = 3;
           break;
         }
         const regexCorreo = /^[^\s@]+@usmp\.pe$/;
         if (regexCorreo.test(usuario) == false || contarRepetidos(usuario, '@') != 1) {
-          validError = 5;
+          validError = 4;
           break;
         }
         if (!(sexo === "M" || sexo === "F")) {
+          validError = 5;
+          break;
+        }
+
+        if (!(perfil === "DOCENTE" || perfil === "ALUMNO")) {
           validError = 6;
           break;
         }
 
+        if (perfil == 'ALUMNO' && !codigo) {
+          validError = 7;
+          break;
+        }
 
+        if (perfil == 'DOCENTE' && codigo) {
+          validError = 8;
+          break;
+        }
 
+        if (codigo) {
+          if (!(regexNumber).test(codigo)) {
+            validError = 9;
+            break;
+          }
+          if (!(codigo.length == 10)) {
+            validError = 10;
+            break;
+          }
+        }
 
-
-
+        if (!(regexNumber).test(telefono)) {
+          validError = 11;
+          break;
+        }
+        if (!((telefono.length == 7) || (telefono.length == 9))) {
+          validError = 12;
+          break;
+        }
+        let request: CreaModiUsuarioRequest = new CreaModiUsuarioRequest();
+        request.usuario = usuario;
+        request.nombre = nombres;
+        request.apellidoPaterno = paterno;
+        request.apellidoMaterno = materno;
+        request.sexo = sexo;
+        request.codigo = (codigo ? codigo : "");
+        request.telefono = telefono;
+        request.email = "";
+        let listaPerfil: CreaModiRolRequest[] = [
+          { id: Number((obtenerPerfilEnum(perfil))) }
+        ];
+        request.roles = listaPerfil;
+        request.carrera = escuelaProfesional;
+        this.listaRequestUsuarioMasivo.push(request);
         indexRow++;
       }
       if (validError != 0) {
         this.error_subir_archivo(validError, indexRow);
       }
-
-
-
       this.ref.detectChanges();
     };
 
     reader.readAsArrayBuffer(target.files[0]);
     reader.onloadend = (e) => {
       this.spinner.hide();
+      this.archivoAccionMasivaForm.setValue(null);
+      this.archivoAccionMasiva = null;
+      console.log(this.listaRequestUsuarioMasivo)
+      let cantidadRequest: number = this.listaRequestUsuarioMasivo.length;
+      if (cantidadRequest > 0) {
+        let textTitulo: string = cantidadRequest == 1 ? "al usuario" : " a los " + cantidadRequest + " usuarios";
+        Swal.fire({
+          title: "¿Desea registrar " + textTitulo + " en el Sistema de EpicsBot?",
+          text: "Por favor verificar la información",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '<span style="padding: 0 12px;">Sí, registrar</span>',
+          cancelButtonText: "No, Cancelar",
+          allowOutsideClick: false
+        }).then((result) => {
+          if (result.value) {
+
+
+          }
+        });
+      }
     }
 
   }
 
   error_subir_archivo(error, index) {
+    this.listaRequestUsuarioMasivo = [];
     let textError: string = "";
     switch (error) {
       case 1:
         textError = "La fila " + index + " no tiene los campos completos";
         break
       case 2:
-        textError = "El campo CODIGO de la fila " + index + " es necesario debido a que el perfil seleccionado es ALUMNO";
+        textError = "Uno o varios de los campos USUARIO , NOMBRES , PATERNO , MATERNO de la fila " + index + " superan el límite de carácteres (250)";
         break
       case 3:
-        textError = "Uno o varios de los campos USUARIO,NOMBRES,PATERNO,MATERNO de la fila " + index + " superan el límite de carácteres (250)";
+        textError = "Uno o varios de los campos NOMBRES , PATERNO , MATERNO de la fila " + index + " no son alfabeticos";
         break
       case 4:
-        textError = "Uno o varios de los campos NOMBRES,PATERNO,MATERNO de la fila " + index + " no son alfabeticos";
-        break
-      case 5:
         textError = "El campo USUARIO de la fila " + index + " no es un correo institucional";
         break
-      case 6:
+      case 5:
         textError = "El campo SEXO de la fila " + index + " solo puede ser M o F";
+        break
+      case 6:
+        textError = "El campo PERFIL de la fila " + index + " solo puede ser ALUMNO o DOCENTE";
+        break
+      case 7:
+        textError = "El campo CODIGO de la fila " + index + " es necesario debido a que el perfil seleccionado es ALUMNO";
+        break
+      case 8:
+        textError = "El campo CODIGO de la fila " + index + " no es necesario debido a que el perfil seleccionado es DOCENTE";
+        break
+      case 9:
+        textError = "El campo CODIGO de la fila " + index + " solo debe ser númerico";
+        break
+      case 10:
+        textError = "El campo CODIGO de la fila " + index + " solo puede ser de 10 dígitos";
+        break
+      case 11:
+        textError = "El campo TELEFONO de la fila " + index + " debe ser númerico";
+        break
+      case 12:
+        textError = "El campo TELEFONO de la fila " + index + " debe solo 7 y 9 dígitos";
         break
     }
     alertNotificacion("Se ha producido un error al intentar cargar los datos:<br>" + textError, "error");
