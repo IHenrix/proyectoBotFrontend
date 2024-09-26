@@ -43,7 +43,7 @@
           <th class="text-center">Nombre</th>
           <th class="text-center">Paterno</th>
           <th class="text-center">Materno</th>
-          <th class="text-center">Código Alumno</th>
+          <th class="text-center">Sexo</th>
           <th class="text-center">Telefono</th>
           <th class="text-center">Escuela Profesional</th>
           <th class="text-center">Opciones</th>
@@ -62,7 +62,7 @@
     <div class="modal-header bg-sunarp-gray-dark">
       <h3 class="modal-title h3-sunarp text-white">EPICSBOT</h3>
       <button tabindex="-1" type="button" class="close" aria-label="Close"
-        style="overflow:hidden; position: absolute; right: 30px; top: 2px;background-color: transparent;border: 0px;"
+        style="overflow:hidden; position: absolute; right: 30px; top: 1px;background-color: transparent;border: 0px;"
         (click)="modal_ver_usuario_va.close();">
         <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
       </button>
@@ -154,12 +154,10 @@
             <div class="row">
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Usuario (Correo Institucional)</label>
-                <input  formControlName="usuario" maxlength="250" type="text"
-                  class="form-control-sunarp">
+                <input formControlName="usuario" maxlength="250" type="text" class="form-control-sunarp">
                 <small *ngIf="formBusValid && fBus.usuario.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
-                <small
-                  *ngIf="formBusValid && fBus.usuario.errors?.no_email_usmp"
+                <small *ngIf="formBusValid && fBus.usuario.errors?.no_email_usmp"
                   class="invalid-feedback-sunarp p-0 mt-2">El usuario debe ser el correo institucional</small>
               </div>
               <div *ngIf="fBus.rol.value=='1'" class="col-lg-6 col-md-12 mt-2">
@@ -241,20 +239,25 @@
           <div class="row text-center">
             <div class="col-lg-12 col-md-12 mt-2">
               <span class="text-sunarp-cyan">Esta función debe hacerse obligatoriamente con el siguiente
-                <span class="text-sunarp-red" style="cursor: pointer;font-weight: bold;">FORMATO</span></span>
+                <span (click)="descargarPlantillaUsuarioMasivo()" class="text-sunarp-red" style="cursor: pointer;font-weight: bold;">FORMATO</span></span>
             </div>
           </div>
           <div class="row">
             <div class="col-lg-12 col-md-12 mt-2">
               <label class="label-sunarp"></label><br>
-              <input [formControl]="archivoAccionMasivaForm" (change)="cambiarArchivoAccionMasiva($event)" accept=".xlsx,.xls" type="file" class="form-control-sunarp">
+              <input [formControl]="archivoAccionMasivaForm" (change)="cambiarArchivoAccionMasiva($event)"
+                accept=".xlsx,.xls" type="file" class="form-control-sunarp">
+            </div>
+            <div *ngIf="false" class="w-100 text-center mt-3">
+              <span>La contraseña por defecto será {{passwordDefault}} para todos los usuarios</span>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="modal-footer d-flex justify-content-center">
-      <button (click)="cargaMasiva()" type="button" class="btn-sunarp-green"><i class="fa fa-plus icon-sunarp mr-2"></i>Registrar
+      <button (click)="cargaMasiva()" type="button" class="btn-sunarp-green"><i
+          class="fa fa-plus icon-sunarp mr-2"></i>Registrar
         Usuarios</button>
       <button (click)="modal_accion_masiva_va.close();" type="button" class="btn-sunarp-red"><i
           class="fa fa-times icon-sunarp mr-2"></i>Salir</button>

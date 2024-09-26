@@ -14,5 +14,6 @@ export class CreaModiUsuarioRequest {
   carrera:string;
   idCarrera:number;
   usuario_id:number;
+  fila:number;
   roles:CreaModiRolRequest[];
 };

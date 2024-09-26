@@ -11,5 +11,6 @@ export const environment = {
   },
   apiConnectId: '',
   urlApiIp: 'https://api.ipify.org/?format=json',
+  passwordDefault: 'Epicsbot1234@',
   version:'v1.0.0'
 };

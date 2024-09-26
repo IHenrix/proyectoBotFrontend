@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { CreaModiRolRequest } from 'src/app/interfaces/auth/private/creacion-usuario/crea-modi-rol-request';
 import { CreaModiUsuarioRequest } from 'src/app/interfaces/auth/private/creacion-usuario/crea-modi-usu-request';
 import { obtenerPerfilEnum } from 'src/app/util/enum/perfil-enum';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-creacion-usuario',
@@ -34,6 +35,9 @@ export class CreacionUsuarioComponent {
   listaRequestUsuarioMasivo: CreaModiUsuarioRequest[] = [];
 
   listaUsuario: any = [];
+
+  passwordDefault:string=environment.passwordDefault;
+
   constructor(
     private modalservice: NgbModal,
     private ref: ChangeDetectorRef,
@@ -104,14 +108,7 @@ export class CreacionUsuarioComponent {
           { data: 'nombre' },
           { data: 'apellido_paterno' },
           { data: 'apellido_materno' },
-          {
-            data: 'codigo', render: (data: any, type: any, full: any) => {
-              if (data == null) {
-                return '<span class="badge-sunarp-gray-light">-</span>'
-              }
-              return data;
-            }
-          },
+          { data: 'sexo' },
           { data: 'telefono' },
           { data: 'carrera' },
           {
@@ -418,10 +415,10 @@ export class CreacionUsuarioComponent {
       alertNotificacion("Solo esta permitido los archivos xls,xlsx y csv para agregar los pagos no replicados", "info", "Por favor verificar");
       return;
     }
+    this.spinner.show();
     const reader: FileReader = new FileReader();
     this.listaRequestUsuarioMasivo = [];
     reader.onload = (e: any) => {
-      this.spinner.show();
       const bstr: string = e.target.result;
       const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
       const wsname: string = wb.SheetNames[0];
@@ -504,10 +501,11 @@ export class CreacionUsuarioComponent {
           break;
         }
         let request: CreaModiUsuarioRequest = new CreaModiUsuarioRequest();
-        request.usuario = usuario;
-        request.nombre = nombres;
-        request.apellidoPaterno = paterno;
-        request.apellidoMaterno = materno;
+        request.fila = indexRow;
+        request.usuario = usuario.toLowerCase();
+        request.nombre = nombres.toUpperCase();
+        request.apellidoPaterno = paterno.toUpperCase();
+        request.apellidoMaterno = materno.toUpperCase();
         request.sexo = sexo;
         request.codigo = (codigo ? codigo : "");
         request.telefono = telefono;
@@ -523,6 +521,10 @@ export class CreacionUsuarioComponent {
       if (validError != 0) {
         this.error_subir_archivo(validError, indexRow);
       }
+      else if (this.validarUsuariosDuplicados(this.listaRequestUsuarioMasivo)) {
+        alertNotificacion("Se han detectado usuarios duplicados en el archivo adjuntado", "error", "Por favor validar que la información este correcta");
+        this.listaRequestUsuarioMasivo=[];
+      }
       this.ref.detectChanges();
     };
 
@@ -531,7 +533,6 @@ export class CreacionUsuarioComponent {
       this.spinner.hide();
       this.archivoAccionMasivaForm.setValue(null);
       this.archivoAccionMasiva = null;
-      console.log(this.listaRequestUsuarioMasivo)
       let cantidadRequest: number = this.listaRequestUsuarioMasivo.length;
       if (cantidadRequest > 0) {
         let textTitulo: string = cantidadRequest == 1 ? "al usuario" : " a los " + cantidadRequest + " usuarios";
@@ -547,8 +548,15 @@ export class CreacionUsuarioComponent {
           allowOutsideClick: false
         }).then((result) => {
           if (result.value) {
-
-
+            this.spinner.show();
+            this.adminService.crearUsuariosMasivo({ lista: this.listaRequestUsuarioMasivo }).subscribe(resp => {
+              if (resp.cod === 1) {
+                this.modal_accion_masiva_va.close();
+                this.buscar();
+              }
+              alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
+              this.spinner.hide();
+            });
           }
         });
       }
@@ -598,6 +606,20 @@ export class CreacionUsuarioComponent {
         break
     }
     alertNotificacion("Se ha producido un error al intentar cargar los datos:<br>" + textError, "error");
+  }
 
+  validarUsuariosDuplicados(mapArray) {
+    return mapArray.map(function (value) {
+      return value.usuario
+
+    }).some(function (value, index, mapArray) {
+      return mapArray.indexOf(value) !== mapArray.lastIndexOf(value);
+    })
+  }
+  descargarPlantillaUsuarioMasivo() {
+    const link = document.createElement('a');
+    link.href = 'assets/PLANTILLA_CREACION_USUARIOS.xlsx';
+    link.download = 'PLANTILLA_CREACION_USUARIOS.xlsx';
+    link.click();
   }
 }
