@@ -9,6 +9,11 @@ export const environment = {
   urlApiMicroservices: {
     domain: '',
   },
+  msal: {
+    clientId: '',
+    authority: '',
+    redirectUri: ''
+  },
   apiConnectId: '',
   urlApiIp: '',
   passwordDefault: '',

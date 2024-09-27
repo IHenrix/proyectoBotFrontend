@@ -11,6 +11,7 @@ import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { MsalModule, MsalRedirectComponent } from '@azure/msal-angular';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -25,12 +26,12 @@ import { MsalModule, MsalRedirectComponent } from '@azure/msal-angular';
     NgxSpinnerModule.forRoot({ type: 'ball-pulse-sync' }),
     MsalModule.forRoot(new PublicClientApplication({
       auth: {
-        clientId: '96c0ad70-1305-41de-9dea-3acfc73b6d87',
-        authority: 'https://login.microsoftonline.com/common',
-        redirectUri: 'http://localhost:4200/login'
+        clientId: environment.msal.clientId,
+        authority: environment.msal.authority,
+        redirectUri: environment.msal.redirectUri
       },
       cache: {
-        cacheLocation: 'sessionStorage', // Solo mantiene la sesión en la pestaña actual
+        cacheLocation: 'sessionStorage',
         storeAuthStateInCookie: false,
       }
     }), {

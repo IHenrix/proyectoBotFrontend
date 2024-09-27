@@ -94,7 +94,7 @@ export class LoginComponent {
             case 401:
               icon_error = "info";
               icon_error_des_title = err.error.error_description;
-              icon_error_des = environment.nameSystem;
+              icon_error_des = "Por favor validar que los campos sean correctos";
               break;
             case 403:
               icon_error = "warning";

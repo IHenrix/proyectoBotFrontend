@@ -1,5 +1,5 @@
 export const environment = {
-  appName: 'EPICSBOT',
+  appName: 'EPICSBot',
   isTest: false,
   nameSystem: 'EPICSBot',
   authAngular:{
@@ -7,7 +7,12 @@ export const environment = {
     password:'Gracia1234'
   },
   urlApiMicroservices: {
-    domain: 'http://172.20.190.123/apiepicsbot',
+    domain: 'http://localhost:1010',
+  },
+  msal: {
+    clientId: '96c0ad70-1305-41de-9dea-3acfc73b6d87',
+    authority: 'https://login.microsoftonline.com/common',
+    redirectUri: 'http://localhost:4200/login',
   },
   apiConnectId: '',
   urlApiIp: 'https://api.ipify.org/?format=json',
