@@ -173,7 +173,7 @@
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo debe tener 10 dígitos</small>
               </div>
             </div>
-            <div class="row">
+            <!---  <div class="row">
               <div class="col-lg-6 col-md-12 mt-2">
                 <label class="label-sunarp">Contraseña</label>
                 <input placeholder="********" formControlName="password" maxlength="16" type="password"
@@ -188,7 +188,7 @@
                 <small *ngIf="formBusValid && fBus.confirmPassword.errors?.required"
                   class="invalid-feedback-sunarp p-0 mt-2">Este campo es requerido</small>
               </div>
-            </div>
+            </div>-->
             <div class="row mt-3">
               <div class="w-100 text-center">
                 <label class="label-sunarp">Perfil</label>
@@ -239,7 +239,8 @@
           <div class="row text-center">
             <div class="col-lg-12 col-md-12 mt-2">
               <span class="text-sunarp-cyan">Esta función debe hacerse obligatoriamente con el siguiente
-                <span (click)="descargarPlantillaUsuarioMasivo()" class="text-sunarp-red" style="cursor: pointer;font-weight: bold;">FORMATO</span></span>
+                <span (click)="descargarPlantillaUsuarioMasivo()" class="text-sunarp-red"
+                  style="cursor: pointer;font-weight: bold;">FORMATO</span></span>
             </div>
           </div>
           <div class="row">

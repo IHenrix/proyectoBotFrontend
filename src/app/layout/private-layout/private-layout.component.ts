@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { MsalService } from '@azure/msal-angular';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Usuario } from 'src/app/interfaces/auth/usuario';
@@ -35,7 +36,8 @@ export class PrivateLayoutComponent {
     private ref: ChangeDetectorRef,
     private router: Router,
     private modalService: NgbModal,
-    public _authService:AuthService
+    public _authService:AuthService,
+    private msalService: MsalService
 
   ) {
     this.innerWidth = window.innerWidth;
@@ -67,7 +69,6 @@ export class PrivateLayoutComponent {
   }
 
   cerrar_sesion() {
-
     this.modalService.dismissAll();
     this.spinner.hide();
     this._authService.logout();

@@ -95,7 +95,7 @@ export class AuthService {
 
   obtenerRol(): string {
     if (this._usuario && Array.isArray(this._usuario.roles) && this._usuario.roles.length > 0) {
-      return this._usuario.roles[0]; 
+      return this._usuario.roles[0];
     }
     return 'No hay roles disponibles';
   }

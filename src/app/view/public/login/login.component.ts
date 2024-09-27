@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MsalService } from '@azure/msal-angular';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthService } from 'src/app/service/auth.service';
+import { alertNotificacion } from 'src/app/util/helpers';
 import { environment } from 'src/environments/environment';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 
@@ -14,16 +16,36 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 })
 export class LoginComponent {
   version:string;
-  constructor(private router: Router, private spinner: NgxSpinnerService,private _authService:AuthService) {
+  constructor(private router: Router, private spinner: NgxSpinnerService,private _authService:AuthService,private msalService: MsalService) {
     this.version = environment.version;
   }
-
   NAME_SYSTEM:string=environment.nameSystem.toUpperCase();
   hide = true;
+  passwordDefault:string=environment.passwordDefault;
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    try {
+      await this.msalService.instance.initialize();  // Asegura la inicialización
+      this.spinner.show();
+      this.msalService.instance.handleRedirectPromise().then((response) => {
+        if (response !== null && response.account) {
+          //console.log('Token de acceso capturado:', response.accessToken);
+          console.log('Usuario autenticado:', response.account.username);
+          this.iniciarSesion(response.account.username,this.passwordDefault);
+        } else {
+          console.log('usuario no está autenticado');
+        }
+        this.spinner.hide();
+      }).catch(error => {
+        alertNotificacion('Error al manejar el redireccionamiento:<br>'+error);
+        console.error('Error al manejar el redireccionamiento:', error);
+        this.spinner.hide();
+      });
 
-
+    } catch (error) {
+      console.error('Error al inicializar MSAL:', error);
+      this.spinner.hide();
+    }
   }
   subFormLogin = false;
   form_login = new FormGroup({
@@ -35,20 +57,26 @@ export class LoginComponent {
     return this.form_login.controls;
   }
 
-  login() {
+  accesoSistema() {
     this.subFormLogin = true;
     if (this.form_login.invalid) {
       return;
     }
     let username = this.getflogin.usuario.value;
     let pass = this.getflogin.pass.value;
-
-   this.spinner.show();
+    this.iniciarSesion(username,pass);
+  }
+  iniciarSesion(username:string,pass:string){
+    this.spinner.show();
     this._authService.login(username, pass).subscribe(
       (response) => {
         this._authService.saveToken(response.access_token);
         this._authService.saveUser(response.access_token);
-        this.router.navigate([this._authService.obtenerRol()==="ROLE_USER"?"/usuario":"/usuario/admin/funciones"]);
+        //this.router.navigate([this._authService.obtenerRol() === "ROLE_USER" ? "/usuario" : "/usuario/admin/funciones"])
+        this.router.navigate([this._authService.obtenerRol() === "ROLE_USER" ? "/usuario" : "/usuario/admin/funciones"])
+        .then(() => {
+          window.location.reload();
+        });
         this.spinner.hide();
       },
       (err) => {
@@ -85,6 +113,17 @@ export class LoginComponent {
 
       }
     );
+  }
+  ngOnDestroy() {
+    this.msalService.instance.setActiveAccount(null);
+    sessionStorage.clear();
+    console.log('Sesión de MSAL local eliminada');
+  }
 
+  loginMicrosoft() {
+    const loginRequest = {
+      scopes: ['user.read']
+    };
+    this.msalService.loginRedirect(loginRequest);
   }
 }

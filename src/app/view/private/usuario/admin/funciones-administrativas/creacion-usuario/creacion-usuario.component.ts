@@ -65,8 +65,8 @@ export class CreacionUsuarioComponent {
 
   formUsuario = new FormGroup({
     usuario: new FormControl("", [Validators.required, this.customvalidator.validateEmailUSMP]),
-    password: new FormControl("", [Validators.required]),
-    confirmPassword: new FormControl("", [Validators.required]),
+    password: new FormControl(""),
+    confirmPassword: new FormControl(""),
     apellidoPaterno: new FormControl("", [Validators.required, this.customvalidator.ValidateOnlyLetter]),
     apellidoMaterno: new FormControl("", [Validators.required, this.customvalidator.ValidateOnlyLetter]),
     nombre: new FormControl("", [Validators.required, this.customvalidator.ValidateOnlyLetter]),
@@ -198,15 +198,10 @@ export class CreacionUsuarioComponent {
       rol: "1"
     });
 
-    if (tipoAccion === 2) {
-      limpiarFormcontrol(this.formUsuario.get("password"), []);
-      limpiarFormcontrol(this.formUsuario.get("confirmPassword"), []);
-    }
-    else {
-      limpiarFormcontrol(this.formUsuario.get("password"), [Validators.required]);
-      limpiarFormcontrol(this.formUsuario.get("confirmPassword"), [Validators.required]);
+    if (tipoAccion === 1) {
       limpiarFormcontrol(this.formUsuario.get("codigo"), [Validators.required, this.customvalidator.ValidateOnlyNumber, this.customvalidator.validateCodeAlumno]);
     }
+
     this.abrirModal();
   }
   recargarTabla() {

@@ -9,6 +9,8 @@ import { PublicLayoutComponent } from './layout/public-layout/public-layout.comp
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
+import { MsalModule, MsalRedirectComponent } from '@azure/msal-angular';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,25 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
     HttpClientModule,
     BrowserAnimationsModule,
     NgxSpinnerModule.forRoot({ type: 'ball-pulse-sync' }),
+    MsalModule.forRoot(new PublicClientApplication({
+      auth: {
+        clientId: '96c0ad70-1305-41de-9dea-3acfc73b6d87',
+        authority: 'https://login.microsoftonline.com/common',
+        redirectUri: 'http://localhost:4200/login'
+      },
+      cache: {
+        cacheLocation: 'sessionStorage', // Solo mantiene la sesión en la pestaña actual
+        storeAuthStateInCookie: false,
+      }
+    }), {
+      interactionType:  InteractionType.Redirect,
+      authRequest: {
+        scopes: ['user.read']
+      }
+    }, {
+      interactionType:  InteractionType.Redirect,
+      protectedResourceMap: new Map([['https://graph.microsoft.com/v1.0/me', ['user.read']]])
+    })
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
