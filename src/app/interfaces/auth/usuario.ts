@@ -8,5 +8,6 @@ export class Usuario {
   carrera: string;
   email: string;
   telefono: string;
+  username: string;
   roles=[];
 };

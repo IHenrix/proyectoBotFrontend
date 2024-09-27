@@ -30,7 +30,6 @@ export class AuthService {
       ) as Usuario;
       return this._usuario;
     }
-    console.log("sADASDASDASD")
     return new Usuario();
   }
 
@@ -65,6 +64,7 @@ export class AuthService {
     this._usuario.carrera = payload.carrera;
     this._usuario.email = payload.email;
     this._usuario.telefono = payload.telefono;
+    this._usuario.username = payload.user_name;
     this._usuario.roles = payload.authorities;
     localStorage.setItem("us_Bot", JSON.stringify(this._usuario));
   }
