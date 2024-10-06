@@ -66,6 +66,7 @@ export class AuthService {
     this._usuario.telefono = payload.telefono;
     this._usuario.username = payload.user_name;
     this._usuario.roles = payload.authorities;
+    this._usuario.idPersona=payload.idPersona;
     localStorage.setItem("us_Bot", JSON.stringify(this._usuario));
   }
 

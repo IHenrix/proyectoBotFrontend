@@ -78,7 +78,7 @@ export class FormValidationCustomService {
     return null;
   }
 
-  
+
   ValidateOnlyNumber(control: AbstractControl): { [key: string]: any } | null {
     let data = control.value as string;
     if (data != null || data != undefined) {

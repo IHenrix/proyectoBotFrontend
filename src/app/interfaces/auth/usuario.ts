@@ -9,5 +9,6 @@ export class Usuario {
   email: string;
   telefono: string;
   username: string;
+  idPersona:number;
   roles=[];
 };

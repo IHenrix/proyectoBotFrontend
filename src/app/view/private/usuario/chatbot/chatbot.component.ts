@@ -1,14 +1,12 @@
 import { Component, ElementRef, ViewChild, AfterViewChecked, ViewEncapsulation, Renderer2 } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormControl } from '@angular/forms';
 import { ChatBotService } from 'src/app/service/chatbot.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { alertNotificacion, languageDataTable } from 'src/app/util/helpers';
-import { Subject } from 'rxjs';
-import { ADTSettings } from 'angular-datatables/src/models/settings';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AdminService } from 'src/app/service/admin.service';
+import { CATEGORIA } from 'src/app/shared/enum/enum';
 
 @Component({
   selector: 'app-chatbot',
@@ -27,6 +25,7 @@ export class ChatbotComponent implements AfterViewChecked {
   loading = false;
   loadingAction = false;
   accionGlobal: number = 0;
+  categoriaSeleccionada:number=0;
   listGuias: any = [];
   constructor(private adminService: AdminService, private spinner: NgxSpinnerService, private chatBotService: ChatBotService, private modalservice: NgbModal, public sanitizer: DomSanitizer, private renderer: Renderer2) { }
   @ViewChild('fileInput') fileInput: ElementRef;
@@ -75,7 +74,7 @@ export class ChatbotComponent implements AfterViewChecked {
     let htmlString = `<p>Hola, soy EPICSBot, tu asistente virtual académico. Mi rol es ayudarte en la formulación de tu proyecto brindándote asesoría. Recuerda que mi objetivo no es que copies o que yo te genere respuestas automáticas que puedas copiar y pegar, sino ayudarte a agilizar la búsqueda de información, darte retroalimentación y guiarte en el proceso de investigación. Elige una opción para empezar:</p>
     <button class="option-btn btn-opcion-bot" data-value="3">Consulta sobre mi Proyecto</button>
     <button class="option-btn btn-opcion-bot" data-value="4">Guías Académicas</button>
-    <button class="option-btn btn-opcion-bot" data-value="1">Consulta de Recursos Bibliográficos</button>     
+    <button class="option-btn btn-opcion-bot" data-value="1">Consulta de Recursos Bibliográficos</button>
     <button class="option-btn btn-opcion-bot" data-value="2">Retroalimentación de Documentos</button>`;
     this.messages.push({ sender: 'bot', text: htmlString });
   }
@@ -93,7 +92,7 @@ export class ChatbotComponent implements AfterViewChecked {
         prompt = "Tu misión es ayudar realizar la revisión completa de la estructura de un proyecto pdf,el cual tienes como objetivo ayudar a mejorar cada sección del mismo. Daras recomendaciones en cuanto a coherencia, estilo, y el uso correcto del formato APA.Debes dar sugerencias personalizadas.(Da las recomendaciones en un <li> por favor y todo debe ser estrictamente academico)"
         break;
       case 3:
-        prompt = "Tu misión es brindar orientación académica sobre preguntas puntuales que tenga el usuario ya que lo ayudaras en un proyecto.Esto incluye la estructura del marco teórico, la formulación de objetivos, o cualquier otra duda metodológica. Tu debes guiar, no proporcionar respuestas automáticas(Tu misión es netamente academica y solo podras responder de acuerdo a las indicaciones anteriores)";
+        prompt = "Tu misión es brindar orientación académica sobre preguntas puntuales que tenga el usuario ya que lo ayudaras en un proyecto.Esto incluye la estructura del marco teórico, la formulación de objetivos, o cualquier otra duda metodológica. Tu debes guiar, no proporcionar respuestas automáticas(Tu misión es netamente academica y solo podras responder de acuerdo a las indicaciones anteriores, Ademas de que si daras una lista ponla en un <li></li>)";
         break;
     }
     return prompt;
@@ -105,7 +104,7 @@ export class ChatbotComponent implements AfterViewChecked {
         this.loading = true;
         this.loadingAction = true;
         this.messages.push({ sender: 'user', text: userInput });
-        let request = { mensaje: userInput };
+        let request = { categoria:this.categoriaSeleccionada, mensaje: userInput };
         this.listGuias = [];
         this.chatBotService.buscarGuias(request).subscribe(
           response => {
@@ -138,7 +137,7 @@ export class ChatbotComponent implements AfterViewChecked {
         this.loading = true;
         this.loadingAction = true;
         this.messages.push({ sender: 'user', text:"He adjuntado el documento: "+ this.selectedFileRetroalimentacion.name });
-        this.chatBotService.enviarMensajeConArchivo("Aca te indico el documento", this.promptTemaSeleccionado(), this.selectedFileRetroalimentacion).subscribe(
+        this.chatBotService.enviarMensajeConArchivo(String(this.categoriaSeleccionada),"Aca te indico el documento", this.promptTemaSeleccionado(), this.selectedFileRetroalimentacion).subscribe(
           response => {
             this.loading = false;
             this.showBotResponseGradually(response.model).then(() => {
@@ -161,7 +160,7 @@ export class ChatbotComponent implements AfterViewChecked {
         this.loading = true;
         this.loadingAction = true;
         this.messages.push({ sender: 'user', text: userInput });
-        let request = { mensaje: userInput, prompt: this.promptTemaSeleccionado() };
+        let request = {categoria:this.categoriaSeleccionada, mensaje: userInput, prompt: this.promptTemaSeleccionado() };
         this.chatBotService.enviarMensaje(request).subscribe(
           response => {
             this.loading = false;
@@ -224,20 +223,24 @@ export class ChatbotComponent implements AfterViewChecked {
       case 1:
         txtResponder = "Consulta de Recursos Bibliográficos";
         textBotRespuesta = "Te explico el rol de la opción Consulta de Recursos Bibliográficos que acabas de seleccionar. El fin de esta opción es proporcionarte una lista de artículos académicos, papers y estudios que sean relevantes para tu tema de investigación. Los recursos recomendados te ayudarán a profundizar en la revisión teórica de tu proyecto.Por favor, escribe el tema o palabra clave relacionada con tu investigación para que pueda sugerirte recursos académicos."
+        this.categoriaSeleccionada=CATEGORIA.CONSULTA_BIBLIOGRAFICO;
         break;
       case 2:
         txtResponder = "Retroalimentación de Documentos";
-        textBotRespuesta = "Te explico el rol de la opción Retroalimentación de Documentos que acabas de seleccionar. El fin de esta opción es brindarte una revisión completa de la estructura, redacción y formato de tu documento, enfocándome en los lineamientos de la Directiva de Trabajos de Investigación. Mi objetivo es ayudarte a mejorar cada sección del proyecto, no hacer el trabajo por ti. Recibirás recomendaciones en cuanto a coherencia, estilo, y el uso correcto del formato APA.  Ahora, por favor adjunta tu archivo en formato Word o PDF para que pueda analizar tu proyecto y brindarte sugerencias personalizadas.";
+        textBotRespuesta = "Te explico el rol de la opción Retroalimentación de Documentos que acabas de seleccionar. El fin de esta opción es brindarte una revisión completa de la estructura, redacción y formato de tu documento, enfocándome en los lineamientos de la Directiva de Trabajos de Investigación. Mi objetivo es ayudarte a mejorar cada sección del proyecto, no hacer el trabajo por ti. Recibirás recomendaciones en cuanto a coherencia, estilo, y el uso correcto del formato APA.  Ahora, por favor adjunta tu archivo en formato PDF para que pueda analizar tu proyecto y brindarte sugerencias personalizadas.";
+        this.categoriaSeleccionada=CATEGORIA.RETROALIMENACION;
         break;
       case 3:
         txtResponder = "Consulta sobre mi Proyecto";
         textBotRespuesta = "Te explico el rol de la opción Consulta sobre mi Proyecto que acabas de seleccionar. El fin de esta opción es brindarte orientación académica sobre preguntas puntuales que tengas sobre tu proyecto, como la estructura del marco teórico, la formulación de objetivos, o cualquier otra duda metodológica. Mi objetivo es guiarte, no proporcionarte respuestas automáticas.";
         textBotRespuesta2 = "Por favor, escribe tu pregunta específica relacionada con tu proyecto y te proporcionaré sugerencias académicas que te ayuden a resolver tus dudas.";
+        this.categoriaSeleccionada=CATEGORIA.CONSULTA_PROYECTO;
         break;
       case 4:
         txtResponder = "Guías Académicas";
         textBotRespuesta = "Te explico el rol de la opción Guías Académicas que acabas de seleccionar. El fin de esta opción es proporcionarte acceso a guías académicas que te ayuden a estructurar correctamente cada parte de tu proyecto de investigación, desde el planteamiento del problema hasta la conclusión. Las guías te ayudarán a entender qué se espera en cada sección.";
         textBotRespuesta2 = '<p>Por favor, Indique que el tema que necesita para poder devolverle la Guia correspondiente</p>';
+        this.categoriaSeleccionada=CATEGORIA.GUIAS_ACADEMICAS;
         break;
     }
     this.messages.push({ sender: 'user', text: txtResponder });
