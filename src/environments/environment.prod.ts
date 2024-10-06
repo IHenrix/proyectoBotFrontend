@@ -7,12 +7,12 @@ export const environment = {
     password:'Gracia1234'
   },
   urlApiMicroservices: {
-    domain: 'http://localhost:1010',
+    domain: 'https://epicsbot-app-service.rj.r.appspot.com',
   },
   msal: {
     clientId: '96c0ad70-1305-41de-9dea-3acfc73b6d87',
     authority: 'https://login.microsoftonline.com/common',
-    redirectUri: 'http://localhost:4200/login',
+    redirectUri: 'https://epicsbot-app-85957209609.southamerica-east1.run.app/login',
   },
   apiConnectId: '',
   urlApiIp: 'https://api.ipify.org/?format=json',

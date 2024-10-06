@@ -1,1 +1,4 @@
-ng build --base-href /epicsbot/ -c production
+ng build --configuration production
+gcloud config set project epicsbot-app
+gcloud run deploy epicsbot-app
+--30
