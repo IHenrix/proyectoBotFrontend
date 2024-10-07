@@ -196,16 +196,34 @@ export class SupervisionConsultasComponent {
       allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
+        const request={
+          categoriaDescripcion:data.categoria,
+          categoria:data.id_categoria,
+          usuario:data.id_persona,
+          usuarioNombre:data.nombre
+        };
         if(tipo=="1"){
           this.spinner.show();
-          const request={categoria:data.id_categoria,usuario:data.id_persona};
           this.supervisionConsultaService.exportarSupervisionConsultaPDF(request).subscribe(resp => {
             this.convertirBase64aPDF(resp);
             this.spinner.hide();
           });
         }
         else{
-
+          this.spinner.show();
+          this.supervisionConsultaService.exportarSupervisionConsultaExcel(request).subscribe(resp => {
+            this.spinner.hide();
+            const blob = new Blob([resp], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            });
+            const url = window.URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = 'SupervisionConsulta.xlsx';
+            anchor.click();
+            window.URL.revokeObjectURL(url);
+            this.spinner.hide();
+          });
         }
       }
     });
