@@ -1,1 +1,106 @@
 <h3 class="mt-4 mb-4 h3-sunarp">Supervisión de Consultas de los Estudiantes</h3>
+<div class="row mb-4">
+  <div class="col-md-12 col-lg-12">
+    <form [formGroup]="formBusqueda" (ngSubmit)="buscar()">
+      <div class="row">
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Categoria</label>
+          <ng-select formControlName="categoria" bindLabel="nombre" bindValue="cod" placeholder="SELECCIONA">
+            <ng-option [value]="''">SELECCIONA</ng-option>
+            <ng-option *ngFor="let item of listaCategoria" [value]="item.cod">
+              {{item.nombre}}</ng-option>
+          </ng-select>
+        </div>
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Usuario</label>
+          <ng-select formControlName="usuario" bindLabel="nombre" bindValue="cod" placeholder="SELECCIONA">
+            <ng-option [value]="''">SELECCIONA</ng-option>
+            <ng-option *ngFor="let item of listaEstudiantes" [value]="item.cod">
+              {{item.nombre}}</ng-option>
+          </ng-select>
+        </div>
+        <div class="col-lg-6 col-md-12 mt-2">
+          <div class="w-100 mt-4">
+            <button style="margin-right: 15px;" type="submit" class="btn-sunarp-green btn-reload-tabla"><i
+                class="fa fa-search icon-sunarp"></i>Buscar</button>
+            <button  (click)="limpiar()" type="button" class="btn-sunarp-yellow mr-2"><i
+                class="fa fa-refresh icon-sunarp"></i>Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+<div class="mt-2">
+  <div class="table-responsive">
+    <table datatable class="table thead-sunarp" datatable [dtOptions]="datatable_consulta"
+      [dtTrigger]="datatable_dtTrigger_consulta">
+      <thead>
+        <tr>
+          <th style="width: 30px" class="text-center">N°</th>
+          <th class="text-center">Estudiantes</th>
+          <th class="text-center">Categoría</th>
+          <th class="text-center">Número de Consultas</th>
+          <th class="text-center">Última Consulta</th>
+          <th class="text-center">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<ng-template #modal_ver_detalle let-c="close" let-d="dismiss">
+  <div class="modal-content">
+    <div class="modal-header bg-sunarp-gray-dark">
+      <h3 class="modal-title h3-sunarp text-white">EPICSBOT</h3>
+      <button tabindex="-1" type="button" class="close" aria-label="Close"
+        style="overflow:hidden; position: absolute; right: 30px; top: 2px;background-color: transparent;border: 0px;"
+        (click)="modal_ver_detalle_va.close();">
+        <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body pl-5 pb-4 pr-5 pt-4">
+      <h2 class="title-typ-devo text-center" style="font-size: 25px;">CONSULTAS SOBRE<span
+          class="text-sunarp-green"> '{{categoriaSeleccionada}}'</span>
+      </h2>
+      <br>
+      <span>Se han encontrado {{listaConsultaDetalle.length}} consulta(s)</span>
+      <div class="mt-4">
+        <span></span>
+        <div class="table-responsive">
+          <table class="table table-soli-devo" style="font-size: 11px;">
+            <thead>
+              <tr>
+                <th style="width: 30px" class="text-center">N°</th>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Categoria</th>
+                <th class="text-center">Pregunta</th>
+                <th class="text-center">Respuesta</th>
+                <th class="text-center">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let archivo of listaConsultaDetalle; let i = index">
+                <td class="text-center">{{ i + 1 }}</td>
+                <td class="text-center">{{ archivo.nombre }}</td>
+                <td class="text-center">{{ archivo.categoria }}</td>
+                <td [innerHTML]="archivo.pregunta"></td>
+                <td [innerHTML]="archivo.respuesta"></td>
+                <td class="text-center">{{ archivo.fecha }}</td>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer d-flex justify-content-center">
+      <button (click)="modal_ver_detalle_va.close();" type="button" class="btn-sunarp-red"><i
+          class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
+    </div>
+  </div>
+</ng-template>

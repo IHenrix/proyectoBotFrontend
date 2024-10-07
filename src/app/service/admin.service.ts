@@ -76,4 +76,12 @@ export class AdminService {
   crearUsuariosMasivo(data: any): Observable<any> {
     return this.http.post<any>(this.baseEndpoint + '/crearUsuariosMasivo', JSON.stringify(data))
   }
+
+  listarEstudiantes(): Observable<any> {
+    return this.http.get<any>(this.baseEndpoint + '/listarEstudiantes')
+  }
+
+  listarCategoria(): Observable<any> {
+    return this.http.get<any>(this.baseEndpoint + '/listarCategoria')
+  }
 }
