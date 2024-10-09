@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
   declarations: [],
@@ -25,7 +26,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     MatInputModule,
     MatIconModule,
     NgxExtendedPdfViewerModule,
-    NgSelectModule
+    NgSelectModule,
+    HighchartsChartModule
   ],
   exports:[
     FormsModule,
@@ -40,7 +42,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     MatInputModule,
     MatIconModule,
     NgxExtendedPdfViewerModule,
-    NgSelectModule
+    NgSelectModule,
+    HighchartsChartModule
   ]
 })
 export class SharedModule { }

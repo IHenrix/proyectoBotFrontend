@@ -8,10 +8,11 @@ import { FuncionesAdministrativasComponent } from './admin/funciones-administrat
 import { CreacionUsuarioComponent } from './admin/funciones-administrativas/creacion-usuario/creacion-usuario.component';
 import { CreacionGuiaComponent } from './admin/funciones-administrativas/creacion-guia/creacion-guia.component';
 import { SupervisionConsultasComponent } from './admin/funciones-administrativas/supervision-consultas/supervision-consultas.component';
+import { AccesoInformesComponent } from './admin/funciones-administrativas/acceso-informes/acceso-informes.component';
 
 
 @NgModule({
-  declarations: [UsuarioComponent, ChatbotComponent, FuncionesAdministrativasComponent, CreacionUsuarioComponent, CreacionGuiaComponent, SupervisionConsultasComponent
+  declarations: [UsuarioComponent, ChatbotComponent, FuncionesAdministrativasComponent, CreacionUsuarioComponent, CreacionGuiaComponent, SupervisionConsultasComponent, AccesoInformesComponent
   ],
   imports: [
     CommonModule,
