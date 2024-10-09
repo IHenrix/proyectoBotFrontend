@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import * as Highcharts from 'highcharts';
-
+import Exporting from 'highcharts/modules/exporting';
+Exporting(Highcharts);
 @Component({
   selector: 'app-acceso-informes',
   templateUrl: './acceso-informes.component.html',
@@ -8,19 +9,15 @@ import * as Highcharts from 'highcharts';
 })
 export class AccesoInformesComponent {
 
-  HighchartsCategorias: typeof Highcharts = Highcharts;
-  chartOptionsCategorias: any;
-  HighchartsFrecuenciaUso: typeof Highcharts = Highcharts;
-  chartOptionsFrecuenciaUso: any;
-
-  HighchartsInteracciones: typeof Highcharts = Highcharts;
-  chartOptionsInteracciones: any;
-
-  private fontFamilyCustom: string = '\'Roboto Condensed\', sans-serif';
-
-
-
-
+  HighchartsPrimero: typeof Highcharts = Highcharts;
+  chartOptionsPrimero: any;
+  HighchartsSegundo: typeof Highcharts = Highcharts;
+  chartOptionsSegundo: any;
+  HighchartsTercero: typeof Highcharts = Highcharts;
+  chartOptionsTercero: any;
+  HighchartsCuatro: typeof Highcharts = Highcharts;
+  chartOptionsCuatro: any;
+  fontFamilyCustom: string = '\'Roboto Condensed\', sans-serif';
   ngOnInit(): void {
 
     this.cargarDashboard();
@@ -28,8 +25,7 @@ export class AccesoInformesComponent {
 
 
   cargarDashboard() {
-    // this._admService.reporte_ate_lima(this.firstDateSelected,this.lastDateSelected).subscribe(
-    this.chartOptionsCategorias = {
+    this.chartOptionsPrimero = {
       chart: {
         plotBackgroundColor: null,
         plotBorderWidth: null,
@@ -42,11 +38,11 @@ export class AccesoInformesComponent {
         }
       },
       title: {
-        text: 'TOP 5- CATEGORIAS MÁS GENERADAS',
+        text: 'TOP 5- Primero MÁS GENERADAS',
         style: {
           color: '#E0E0E3',
           textTransform: 'uppercase',
-          fontSize: '20px'
+          fontSize: '15px'
         }
       },
       colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798bf', '#aaeeee'],
@@ -131,7 +127,7 @@ export class AccesoInformesComponent {
       }]
     };
 
-    this.chartOptionsFrecuenciaUso = {
+    this.chartOptionsSegundo = {
       chart: {
         type: 'column',
         backgroundColor: 'transparent',
@@ -145,7 +141,7 @@ export class AccesoInformesComponent {
         style: {
           color: '#E0E0E3',
           textTransform: 'uppercase',
-          fontSize: '20px'
+          fontSize: '15px'
         }
       },
       xAxis: {
@@ -216,38 +212,53 @@ export class AccesoInformesComponent {
       }]
     };
 
-    this.chartOptionsInteracciones = {
+    this.chartOptionsTercero = {
       chart: {
-        type: 'spline'
+        type: 'spline',
+        backgroundColor: 'transparent',
       },
       title: {
-        text: 'Monthly Average Temperature'
-      },
-      subtitle: {
-        text: 'Source: ' +
-          '<a href="https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature" ' +
-          'target="_blank">Wikipedia.com</a>'
+        text: 'Monthly Average Temperature',
+        style: {
+          color: '#E0E0E3',
+          textTransform: 'uppercase',
+          fontSize: '15px'
+        }
       },
       xAxis: {
         categories: [
           'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
         ],
+        labels: {
+          style: {
+            color: '#E0E0E3',
+            fontSize: '13px'
+          }
+        },
         accessibility: {
           description: 'Months of the year'
         }
       },
       yAxis: {
         title: {
-          text: 'Temperature'
+          text: 'Temperature',
         },
         labels: {
-          format: '{value}°'
+          format: '{value}°',
+          style: {
+            color: '#E0E0E3',
+            fontSize: '13px'
+          }
         }
       },
       tooltip: {
         crosshairs: true,
-        shared: true
+        shared: true,
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        style: {
+          color: '#F0F0F0'
+        }
       },
       plotOptions: {
         spline: {
@@ -257,6 +268,24 @@ export class AccesoInformesComponent {
             lineWidth: 1
           }
         }
+      },
+      legend: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        itemStyle: {
+          color: '#E0E0E3'
+        },
+        itemHoverStyle: {
+          color: '#FFF'
+        },
+        itemHiddenStyle: {
+          color: '#606063'
+        },
+        align: 'center',
+        verticalAlign: 'bottom',
+        floating: false,
+        borderColor: '#CCC',
+        borderWidth: 0,
+        shadow: false
       },
       series: [{
         name: 'Tokyo',
@@ -276,8 +305,77 @@ export class AccesoInformesComponent {
 
       }]
     }
-
-    // )
+    this.chartOptionsCuatro=  {
+      chart: {
+          type: 'bar',
+          backgroundColor: 'transparent',
+      },
+      title: {
+          text: 'UEFA CL top scorers by season',
+          style: {
+            color: '#E0E0E3',
+            textTransform: 'uppercase',
+            fontSize: '15px'
+          }
+      },
+      xAxis: {
+          categories: ['2020/21', '2019/20', '2018/19', '2017/18', '2016/17'],
+          labels: {
+            style: {
+              color: '#E0E0E3',
+              fontSize: '13px'
+            }
+          }
+      },
+      yAxis: {
+          min: 0,
+          title: {
+              text: 'Goals'
+          },
+          labels: {
+            style: {
+              color: '#E0E0E3',
+              fontSize: '13px'
+            }
+          }
+      },
+      legend: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        itemStyle: {
+          color: '#E0E0E3'
+        },
+        itemHoverStyle: {
+          color: '#FFF'
+        },
+        itemHiddenStyle: {
+          color: '#606063'
+        },
+        align: 'center',
+        verticalAlign: 'bottom',
+        floating: false,
+        borderColor: '#CCC',
+        borderWidth: 0,
+        shadow: false
+      },
+      plotOptions: {
+          series: {
+              stacking: 'normal',
+              dataLabels: {
+                  enabled: true
+              }
+          }
+      },
+      series: [{
+          name: 'Cristiano Ronaldo',
+          data: [4, 4, 6, 15, 12]
+      }, {
+          name: 'Lionel Messi',
+          data: [5, 3, 12, 6, 11]
+      }, {
+          name: 'Robert Lewandowski',
+          data: [5, 15, 8, 5, 8]
+      }]
+  }
 
   }
 }
