@@ -1,4 +1,28 @@
 <h3 class="mt-4 mb-4 h3-sunarp">Acceso a Informes de Uso del Chatbot</h3>
+<div class="row mb-4">
+  <div class="col-md-12 col-lg-12">
+    <form [formGroup]="formBusqueda" (ngSubmit)="buscar()">
+      <div class="row">
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Fecha Inicio</label>
+          <input formControlName="inicio" class="form-control-sunarp text-uppercase" type="date">
+        </div>
+        <div class="col-lg-3 col-md-12 mt-2">
+          <label class="label-sunarp">Fecha Fin</label>
+          <input formControlName="fin" class="form-control-sunarp text-uppercase" type="date">
+        </div>
+        <div class="col-lg-6 col-md-12 mt-2">
+          <div class="w-100 mt-4">
+            <button [disabled]="formBusqueda.invalid" style="margin-right: 15px;" type="submit" class="btn-sunarp-green btn-reload-tabla"><i
+                class="fa fa-search icon-sunarp"></i>Buscar</button>
+            <button  (click)="limpiar()" type="button" class="btn-sunarp-yellow mr-2"><i
+                class="fa fa-refresh icon-sunarp"></i>Limpiar</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="row mb-4 fondo">
   <div class="col-md-12 col-lg-12">
     <div class="row mt-5">

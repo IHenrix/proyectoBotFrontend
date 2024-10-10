@@ -8,7 +8,7 @@ import { Subject } from 'rxjs';
 import { CodNombre } from 'src/app/interfaces/auth/private/cod-nombre';
 import { AdminService } from 'src/app/service/admin.service';
 import { SupervisionConsultaService } from 'src/app/service/supervision-consultas.service';
-import { alertNotificacion, languageDataTable } from 'src/app/util/helpers';
+import { alertNotificacion, convertirBase64aPDF, languageDataTable } from 'src/app/util/helpers';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -205,7 +205,7 @@ export class SupervisionConsultasComponent {
         if(tipo=="1"){
           this.spinner.show();
           this.supervisionConsultaService.exportarSupervisionConsultaPDF(request).subscribe(resp => {
-            this.convertirBase64aPDF(resp);
+            convertirBase64aPDF(resp);
             this.spinner.hide();
           });
         }
@@ -228,23 +228,5 @@ export class SupervisionConsultasComponent {
       }
     });
   }
-
-  convertirBase64aPDF(data) {
-    if (data != null) {
-      var base64str = data;
-
-      var binary = atob(base64str.replace(/\s/g, ''));
-      var len = binary.length;
-      var buffer = new ArrayBuffer(len);
-      var view = new Uint8Array(buffer);
-      for (var i = 0; i < len; i++) {
-        view[i] = binary.charCodeAt(i);
-      }
-      var file = new Blob([view], { type: 'application/pdf' });
-      var fileURL = URL.createObjectURL(file);
-      window.open(fileURL, '_blank');
-    }
-  }
-
 
 }

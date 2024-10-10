@@ -84,3 +84,21 @@ export const validStringNull = (value: any): boolean => {
 export const obtenerStringSimple = (valor: any): string | null => { 
     return validStringNull(valor) ? String(valor) : null;
   }
+
+export function convertirBase64aPDF(data) {
+    if (data != null) {
+      var base64str = data;
+
+      var binary = atob(base64str.replace(/\s/g, ''));
+      var len = binary.length;
+      var buffer = new ArrayBuffer(len);
+      var view = new Uint8Array(buffer);
+      for (var i = 0; i < len; i++) {
+        view[i] = binary.charCodeAt(i);
+      }
+      var file = new Blob([view], { type: 'application/pdf' });
+      var fileURL = URL.createObjectURL(file);
+      window.open(fileURL, '_blank');
+    }
+  }
+
