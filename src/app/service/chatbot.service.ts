@@ -4,28 +4,36 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from 'src/environments/environment';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class ChatBotService {
-    constructor(
-        private http: HttpClient,
-    ) {
-    }
-    private baseEndpoint = environment.urlApiMicroservices.domain + '/chatbot';
-    enviarMensaje(data: any): Observable<any> {
-      return this.http.post<any>(this.baseEndpoint + '/enviarMensaje', JSON.stringify(data))
-   }
+  constructor(
+    private http: HttpClient,
+  ) {
+  }
+  private baseEndpoint = environment.urlApiMicroservices.domain + '/chatbot';
+  private baseEndpointAzure = environment.urlApiMicroservices.domain + '/azure';
 
-   buscarGuias(data: any): Observable<any> {
+  enviarMensaje(data: any): Observable<any> {
+    return this.http.post<any>(this.baseEndpoint + '/enviarMensaje', JSON.stringify(data))
+  }
+
+  buscarGuias(data: any): Observable<any> {
     return this.http.post<any>(this.baseEndpoint + '/buscarGuias', JSON.stringify(data))
-   }
+  }
 
-   enviarMensajeConArchivo(categoria:string,mensaje: string,prompt:string, file: File): Observable<any> {
+  enviarMensajeConArchivo(categoria: string, mensaje: string, prompt: string, file: File): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('categoria', categoria);
     formData.append('mensaje', mensaje);
     formData.append('prompt', prompt);
     formData.append('archivo', file);
     return this.http.post<any>(`${this.baseEndpoint}/enviarMensajeConArchivo`, formData);
-}
+  }
+
+  speakToText(audioBlob: Blob): Observable<any> {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'audio.wav');
+    return this.http.post<any>(`${this.baseEndpointAzure}/speakToText`, formData);
+  }
 }

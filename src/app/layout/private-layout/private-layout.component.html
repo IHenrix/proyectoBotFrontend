@@ -33,11 +33,10 @@
             <img *ngSwitchDefault src="assets/img/sistema/hombre.jpg" class="img-radius" alt="sunarp">
           </div>
           <div *ngIf="usuario?.codigo" class="mt-2">
-            <h5 class="text-white mt-2 h5-sunarp">CÓDIGO : {{usuario?.codigo}}</h5>
+            <h5 class="text-white mt-2 h5-sunarp">CÓDIGO DE ALUMNO: {{usuario?.codigo}}</h5>
           </div>
           <h6 class="text-email-principal mt-3 mb-2">Escuela Profesional de {{usuario?.carrera}}</h6>
           <h6 class="text-email-principal mt-3 mb-2">Correo Electrónico : {{usuario?.username}}</h6>
-          <h6 class="text-email-principal mt-3 mb-2">Teléfomo / Celular : {{usuario?.telefono}}</h6>
 
           <ul style="text-align: left;" class="nav-news-feed">
             <li (click)="verChatBot()"  *ngIf="verPermisos()=='ROLE_USER'"><i class="far fa-comment-dots icon1"></i>

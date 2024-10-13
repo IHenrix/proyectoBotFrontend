@@ -10,7 +10,7 @@ export const environment = {
     domain: 'https://epicsbot-app-service.rj.r.appspot.com',
   },
   msal: {
-    clientId: '96c0ad70-1305-41de-9dea-3acfc73b6d87',
+    clientId: '99d5446a-dce4-43ae-b25f-c5074e996d4d',//'96c0ad70-1305-41de-9dea-3acfc73b6d87',
     authority: 'https://login.microsoftonline.com/common',
     redirectUri: 'https://epicsbot-app-85957209609.southamerica-east1.run.app/login',
   },

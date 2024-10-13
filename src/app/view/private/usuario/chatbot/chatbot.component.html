@@ -18,10 +18,14 @@
       (click)="adjuntarArchivo()" class="attach-btn" title="Adjuntar archivos">
       <i class="fas fa-paperclip"></i>
     </button>
-    <input accept="application/pdf" type="file" #fileInput (change)="archivoSeleccionado($event)" style="display: none;">
-    <input [attr.readonly]="accionGlobal === 2 ? true : null" [formControl]="userInputControl" (keyup.enter)="enviarMensaje()" placeholder="Escribe tu mensaje..." />
+    <input accept="application/pdf" type="file" #fileInput (change)="archivoSeleccionado($event)"
+      style="display: none;">
+    <input [attr.readonly]="accionGlobal === 2 ? true : null" [formControl]="userInputControl"
+      (keyup.enter)="enviarMensaje()" placeholder="Escribe tu mensaje..." />
     <button type="button" [disabled]="loadingAction || accionGlobal==0" (click)="enviarMensaje()">Enviar</button>
-    <button type="button" class="btn-volver" (click)="reiniciarMenu()" [disabled]="accionGlobal==0 || loadingAction">Regresar al Menu</button>
+    <button type="button" [disabled]="loadingAction || accionGlobal==0 || accionGlobal === 2 " (click)="abrirModalGrabacion()"><i class="fa fa-microphone" aria-hidden="true"></i></button>
+    <button type="button" class="btn-volver" (click)="reiniciarMenu()"
+      [disabled]="accionGlobal==0 || loadingAction">Regresar al Menu</button>
   </div>
 </div>
 
@@ -98,6 +102,31 @@
 
       <button (click)="modal_ver_documento_va.close();" type="button" class="btn-sunarp-red"><i
           class="fa fa-times icon-sunarp mr-2"></i>Salir</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modal_microfono let-c="close" let-d="dismiss">
+  <div class="modal-content">
+    <div class="modal-header bg-sunarp-gray-dark">
+      <h3 class="modal-title h3-sunarp text-white">Speak To Text</h3>
+      <button *ngIf="!isRecording" tabindex="-1" type="button" class="close" aria-label="Close"
+        style="overflow:hidden; position: absolute; right: 30px; top: -3px;background-color: transparent;border: 0px;"
+        (click)="modal_microfono_va.close();">
+        <span aria-hidden="true" style="font-size:35px !important;" class="text-white">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body pl-5 pb-4 pr-5 pt-4">
+      <div class="audio-container">
+        <div class="microphone" [ngStyle]="{'box-shadow': isRecording ? shadowStyle : 'none'}">
+          <i class="fa fa-microphone"></i>
+        </div>
+        <div class="controls">
+          <button (click)="iniciarGrabracion()" [disabled]="isRecording">Iniciar</button>
+          <button (click)="detenerGrabacion()" [disabled]="!isRecording">Finalizar y Enviar</button>
+        </div>
+        <div class="timer">{{ timeElapsed | date:'mm:ss' }}</div>
+      </div>
     </div>
   </div>
 </ng-template>

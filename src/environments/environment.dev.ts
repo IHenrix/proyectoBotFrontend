@@ -10,7 +10,7 @@ export const environment = {
     domain: 'http://localhost:1010',
   },
   msal: {
-    clientId: '96c0ad70-1305-41de-9dea-3acfc73b6d87',
+    clientId: '99d5446a-dce4-43ae-b25f-c5074e996d4d',
     authority: 'https://login.microsoftonline.com/common',
     redirectUri: 'http://localhost:4200/login'
   },
