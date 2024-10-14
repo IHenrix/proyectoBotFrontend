@@ -48,7 +48,8 @@ export class ChatbotComponent implements AfterViewChecked {
   public isRecording = false;
   public timeElapsed = 0;
   public shadowStyle = '0px 0px 30px rgba(0, 0, 0, 0.3)';
-
+  public chatConVoz:Boolean=false;
+  private audio: HTMLAudioElement | null = null;
 
   ngOnInit() {
     this.insertOpcionesBot();
@@ -56,6 +57,9 @@ export class ChatbotComponent implements AfterViewChecked {
   ngAfterViewChecked() {
     this.scrollToBottom();
     this.botonesDinamicosHmtl();
+  }
+  ngOnDestroy() {
+   this.anularVozActual();
   }
   botonesDinamicosHmtl() {
 
@@ -77,13 +81,22 @@ export class ChatbotComponent implements AfterViewChecked {
         });
       });
     }
-
+    const metodoEjecutarAudio = document.querySelectorAll('.btn-audio-texto');
+      metodoEjecutarAudio.forEach(boton => {
+        boton.addEventListener('click', () => {
+          const dataValue = boton.getAttribute('data-value');
+          this.mensajeConVoz(this.eliminarEtiquetasHTML(this.messages[Number(dataValue)].text))
+        });
+      });
   }
 
   insertOpcionesBot() {
     this.userInputControl.disable();
     this.userInputControl.setValue("")
-    let htmlString = `<p>Hola, soy EPICSBot, tu asistente virtual académico. Mi rol es ayudarte en la formulación de tu proyecto brindándote asesoría. Recuerda que mi objetivo no es que copies o que yo te genere respuestas automáticas que puedas copiar y pegar, sino ayudarte a agilizar la búsqueda de información, darte retroalimentación y guiarte en el proceso de investigación. Elige una opción para empezar:</p>
+    let textPresentacion:string=`Hola, soy EPICSBot, tu asistente virtual académico. Mi rol es ayudarte en la formulación de tu proyecto brindándote asesoría.
+     Recuerda que mi objetivo no es que copies o que yo te genere respuestas automáticas que puedas copiar y pegar,
+      sino ayudarte a agilizar la búsqueda de información, darte retroalimentación y guiarte en el proceso de investigación.Elige una opción para empezar.`;
+    let htmlString = `<p>`+textPresentacion+`<i style="cursor: pointer; margin-left: 10px;" data-value="`+this.messages.length+`" class="fa fa-volume-up btn-audio-texto"></i></p>
     <button class="option-btn btn-opcion-bot" data-value="3">Consulta sobre mi Proyecto</button>
     <button class="option-btn btn-opcion-bot" data-value="4">Guías Académicas</button>
     <button class="option-btn btn-opcion-bot" data-value="1">Consulta de Recursos Bibliográficos</button>
@@ -91,6 +104,7 @@ export class ChatbotComponent implements AfterViewChecked {
     this.messages.push({ sender: 'bot', text: htmlString });
   }
   enviarMensaje() {
+    this.chatConVoz=false;
     this.generarEnvio(this.userInputControl.value);
   }
 
@@ -98,7 +112,7 @@ export class ChatbotComponent implements AfterViewChecked {
     let prompt: string = "";
     switch (this.accionGlobal) {
       case 1:
-        prompt = "Tu misión es proporcionar al usuario una lista de artículos académicos, papers y estudios que sean relevantes para su tema de investigación. Los recursos recomendados deben ayudarlo a profundizar en la revisión teórica de su proyecto.El alumno te dará el tema o palabra clave relacionada con su investigación para que puedas sugerirle recursos académicos.Solo debes dar información de temas académicos osea cientificos o tecnologicos(responde con una lista en <li><li> con todo lo que neecsita ,tambien da URLs para que el usuario pueda acceder con un click)";
+        prompt = "Tu misión es proporcionar al usuario una lista de artículos académicos, papers y estudios que sean relevantes para su tema de investigación. Los recursos recomendados deben ayudarlo a profundizar en la revisión teórica de su proyecto.El alumno te dará el tema o palabra clave relacionada con su investigación para que puedas sugerirle recursos académicos.Solo debes dar información de temas académicos osea cientificos o tecnologicos(responde con una lista en <li><li> con todo lo que necesita ,tambien da URLs para que el usuario pueda acceder con un click)";
         break;
       case 2:
         prompt = "Tu misión es ayudar realizar la revisión completa de la estructura de un proyecto pdf,el cual tienes como objetivo ayudar a mejorar cada sección del mismo. Daras recomendaciones en cuanto a coherencia, estilo, y el uso correcto del formato APA.Debes dar sugerencias personalizadas.(Da las recomendaciones en un <li> por favor y todo debe ser estrictamente academico)"
@@ -110,6 +124,7 @@ export class ChatbotComponent implements AfterViewChecked {
     return prompt;
   }
   generarEnvio(userInput: string) {
+    this.anularVozActual();
     if (userInput && userInput.trim()) {
       this.userInputControl.disable();
       if (this.accionGlobal === 4) {
@@ -128,6 +143,9 @@ export class ChatbotComponent implements AfterViewChecked {
                 this.showBotResponseGradually('<p>Resultados Encontrados: </p><button class="option-btn btn-metodo-guia">Ver Guias</button>').then(() => {
                   this.showBotResponseGradually('Si desea buscar otras Guías indique el tema correspondiente');
                 });
+              }
+              else{
+                this.envioMensajeConVoz(response.mensaje);
               }
               this.loadingAction = false;
             });
@@ -153,6 +171,7 @@ export class ChatbotComponent implements AfterViewChecked {
         this.chatBotService.enviarMensajeConArchivo(String(this.categoriaSeleccionada), "Aca te indico el documento", this.promptTemaSeleccionado(), this.selectedFileRetroalimentacion).subscribe(
           response => {
             this.loading = false;
+            this.envioMensajeConVoz(response.model);
             this.showBotResponseGradually(response.model).then(() => {
               this.showBotResponseGradually("Puedes adjuntar otro documento para la revisión correspondiente");
               this.loadingAction = false;
@@ -177,6 +196,7 @@ export class ChatbotComponent implements AfterViewChecked {
         this.chatBotService.enviarMensaje(request).subscribe(
           response => {
             this.loading = false;
+            this.envioMensajeConVoz(response.model);
             this.showBotResponseGradually(response.model).then(() => {
               this.loadingAction = false;
               this.userInputControl.enable();
@@ -206,7 +226,7 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
 
-  showBotResponseGradually(fullMessage: string): Promise<void> {
+  showBotResponseGradually(fullMessage: string,time:number=10): Promise<void> {
     return new Promise<void>((resolve) => {
       this.currentBotMessage = '';
       let i = 0;
@@ -217,11 +237,14 @@ export class ChatbotComponent implements AfterViewChecked {
           i++;
         } else {
           clearInterval(typingInterval);
-          this.messages.push({ sender: 'bot', text: this.currentBotMessage });
+          this.messages.push({
+            sender: 'bot',
+            text: this.currentBotMessage + '<i style="cursor: pointer; margin-left: 10px;" data-value="'+this.messages.length+'" class="fa fa-volume-up btn-audio-texto" aria-hidden="true"></i>'
+          });
           this.currentBotMessage = '';
           resolve();
         }
-      }, 10);
+      }, time);
     });
   }
   seleccionarOpcion(opcion: number) {
@@ -328,6 +351,7 @@ export class ChatbotComponent implements AfterViewChecked {
   }
   reiniciarMenu() {
     this.selectedFileRetroalimentacion = null;
+    this.anularVozActual();
     if (this.accionGlobal > 0 && !this.loadingAction) {
       this.messages.push({ sender: 'user', text: "Por favor , muestrame nuevamente el Menu Principal" });
       this.showBotResponseGradually("Entendido, procederé a mostrarte nuevamente las opciones").then(() => {
@@ -338,9 +362,11 @@ export class ChatbotComponent implements AfterViewChecked {
   }
   /*FUNCIONES PARA VENTANA DE SPEAK TO TEXT*/
   abrirModalGrabacion() {
+    this.anularVozActual();
     this.modal_microfono_va = this.modalservice.open(this.modal_microfono, { ...this.modalOpciones, size: 'sm' });
+    this.iniciarGrabacion();
   }
-  iniciarGrabracion() {
+  iniciarGrabacion() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.start();
@@ -377,15 +403,28 @@ export class ChatbotComponent implements AfterViewChecked {
     this.mediaRecorder.stop();
     this.isRecording = false;
     this.stopTimer();
-    this.mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(this.chunks, { type: 'audio/wav' });
-      const arrayBuffer = await audioBlob.arrayBuffer();
-      const audioContext = new AudioContext();
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-      const rawAudioData = audioBuffer.getChannelData(0);
-      const wavBlob = this.encodeWAV(rawAudioData, audioBuffer.sampleRate);
-      this.speakToText(wavBlob);
+    const generarWavBlob = () => {
+      return new Promise<Blob>(async (resolve, reject) => {
+        this.mediaRecorder.onstop = async () => {
+          try {
+            const audioBlob = new Blob(this.chunks, { type: 'audio/wav' });
+            const arrayBuffer = await audioBlob.arrayBuffer();
+            const audioContext = new AudioContext();
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            const rawAudioData = audioBuffer.getChannelData(0);
+            const wavBlob = this.encodeWAV(rawAudioData, audioBuffer.sampleRate);
+            resolve(wavBlob);
+          } catch (error) {
+            reject(error);
+          }
+        };
+      });
     };
+    generarWavBlob().then((wavBlob) => {
+      this.speakToText(wavBlob);
+    }).catch((error) => {
+      console.error('Error al generar el archivo WAV:', error);
+    });
   }
 
 
@@ -435,9 +474,15 @@ export class ChatbotComponent implements AfterViewChecked {
     this.chatBotService.speakToText(audioBlob).subscribe(
       resp => {
         if (resp.cod === 1) {
-          this.modal_microfono_va.close();
-          this.userInputControl.setValue(resp.model);
-          //this.enviarMensaje();
+          if(String(resp.model)){
+            this.chatConVoz=true;
+            this.modal_microfono_va.close();
+            this.userInputControl.setValue(resp.model);
+            this.generarEnvio(this.userInputControl.value);
+          }
+          else{
+            alertNotificacion("No se ha grabado correctamente el audio","info","Por favor volver a intentar");
+          }
         }
         else {
           alertNotificacion(resp.mensaje, resp.icon, resp.mensajeTxt);
@@ -458,6 +503,45 @@ export class ChatbotComponent implements AfterViewChecked {
     this.interval = null;
     this.isRecording = false;
     this.timeElapsed = 0;
+  }
+
+  envioMensajeConVoz(mensaje: string) {
+    if (this.chatConVoz) {
+      this.mensajeConVoz(mensaje);
+    }
+  }
+
+  mensajeConVoz(mensaje: string) {
+    this.spinner.show();
+    this.chatBotService.textToSpeak({ mensaje: this.eliminarEtiquetasHTML(mensaje) }).subscribe(
+      resp => {
+        this.anularVozActual();
+        const audioBlob = new Blob([resp], { type: 'audio/wav' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        this.audio = new Audio(audioUrl);
+        this.audio.play().then(() => {
+          this.spinner.hide();
+        }).catch(error => {
+          this.spinner.hide();
+        });
+      },
+      error => {
+        this.spinner.hide();
+      }
+    );
+  }
+
+  anularVozActual(){
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    }
+
+  }
+  eliminarEtiquetasHTML(html: string): string {
+    const temporal = document.createElement('div');
+    temporal.innerHTML = html;
+    return temporal.innerText || temporal.textContent || '';
   }
 
 }

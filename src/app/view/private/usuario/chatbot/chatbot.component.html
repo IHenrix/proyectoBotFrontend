@@ -30,7 +30,6 @@
 </div>
 
 
-
 <ng-template #modal_lista_guias let-c="close" let-d="dismiss">
   <div class="modal-content">
     <div class="modal-header bg-sunarp-gray-dark">
@@ -109,7 +108,7 @@
 <ng-template #modal_microfono let-c="close" let-d="dismiss">
   <div class="modal-content">
     <div class="modal-header bg-sunarp-gray-dark">
-      <h3 class="modal-title h3-sunarp text-white">Speak To Text</h3>
+      <h3 class="modal-title h3-sunarp text-white">Consulta por voz</h3>
       <button *ngIf="!isRecording" tabindex="-1" type="button" class="close" aria-label="Close"
         style="overflow:hidden; position: absolute; right: 30px; top: -3px;background-color: transparent;border: 0px;"
         (click)="modal_microfono_va.close();">
@@ -122,7 +121,7 @@
           <i class="fa fa-microphone"></i>
         </div>
         <div class="controls">
-          <button (click)="iniciarGrabracion()" [disabled]="isRecording">Iniciar</button>
+          <button (click)="iniciarGrabacion()" [disabled]="isRecording">Iniciar</button>
           <button (click)="detenerGrabacion()" [disabled]="!isRecording">Finalizar y Enviar</button>
         </div>
         <div class="timer">{{ timeElapsed | date:'mm:ss' }}</div>
