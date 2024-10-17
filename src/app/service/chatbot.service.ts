@@ -37,9 +37,27 @@ export class ChatBotService {
     return this.http.post<any>(`${this.baseEndpointAzure}/speakToText`, formData);
   }
 
+  
+  speakToTextApi(audioBlob: Blob): Observable<any> {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'audio.wav');
+    return this.http.post<any>(`${this.baseEndpointAzure}/speakToTextApi`, formData);
+  }
+
+
   textToSpeak(request: any): Observable<Blob> {
     return this.http.post(
       this.baseEndpointAzure + '/textToSpeak',
+      request,
+      {
+        responseType: 'blob',
+      }
+    );
+  }
+  
+  textToSpeakApi(request: any): Observable<Blob> {
+    return this.http.post(
+      this.baseEndpointAzure + '/textToSpeakApi',
       request,
       {
         responseType: 'blob',

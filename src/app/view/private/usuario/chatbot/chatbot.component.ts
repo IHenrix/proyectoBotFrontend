@@ -471,7 +471,7 @@ export class ChatbotComponent implements AfterViewChecked {
   }
   speakToText(audioBlob: Blob) {
     this.spinner.show();
-    this.chatBotService.speakToText(audioBlob).subscribe(
+    this.chatBotService.speakToTextApi(audioBlob).subscribe(
       resp => {
         if (resp.cod === 1) {
           if(String(resp.model)){
@@ -513,7 +513,7 @@ export class ChatbotComponent implements AfterViewChecked {
 
   mensajeConVoz(mensaje: string) {
     this.spinner.show();
-    this.chatBotService.textToSpeak({ mensaje: this.eliminarEtiquetasHTML(mensaje) }).subscribe(
+    this.chatBotService.textToSpeakApi({ mensaje: this.eliminarEtiquetasHTML(mensaje) }).subscribe(
       resp => {
         this.anularVozActual();
         const audioBlob = new Blob([resp], { type: 'audio/wav' });
